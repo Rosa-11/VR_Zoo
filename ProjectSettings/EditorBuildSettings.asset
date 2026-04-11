@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Samples/XR Interaction Toolkit/2.5.4/Hands Interaction Demo/HandsDemoScene.unity
     guid: 3ff35cecbcc52cc42945cf531638a60a
   m_configObjects:
-    Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: 0bacdb58533589d418b6b0e65c4669b0,
+    Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: f7f781bc5322c5748bf7c83a664d4bfd,
       type: 2}
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 635ed47776dd81247b40e6f0e27c3a33,
       type: 2}
