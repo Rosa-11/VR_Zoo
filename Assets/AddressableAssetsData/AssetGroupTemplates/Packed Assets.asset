@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5762658414573442431
+--- !u!114 &-6786847758318967214
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,7 +43,7 @@ MonoBehaviour:
     m_ClassName: 
   m_BundleNaming: 0
   m_AssetLoadMode: 0
---- !u!114 &-2979158978280863089
+--- !u!114 &-2490851183593191325
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_Name: Packed Assets
   m_EditorClassIdentifier: 
   m_SchemaObjects:
-  - {fileID: -5762658414573442431}
-  - {fileID: -2979158978280863089}
+  - {fileID: -6786847758318967214}
+  - {fileID: -2490851183593191325}
   m_Description: Pack assets into asset bundles.
-  m_Settings: {fileID: 11400000, guid: 2044ce81d53e8254e90dbe9e32f45470, type: 2}
+  m_Settings: {fileID: 11400000, guid: 1ab5d560a7ce443498baf197504b29a7, type: 2}
