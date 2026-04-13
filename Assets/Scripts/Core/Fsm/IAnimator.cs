@@ -4,6 +4,6 @@ namespace Core.Fsm
 {
     public interface IAnimator
     {
-        Animator animator { get; }
+        Animator Anim { get; }
     }
 }

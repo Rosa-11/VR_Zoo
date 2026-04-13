@@ -1,13 +1,15 @@
+using Entity.DodoBird;
+
 namespace Core.Fsm
 {
-    public abstract class StateBase<T>  : IState 
-        where T : IAnimator
+    public abstract class StateBase<TOwner, TStateKey>  : IState 
+        where TOwner : IAnimator
     {
-        protected readonly T owner;
-        protected StateMachine<T> stateMachine;
+        protected readonly TOwner owner;
+        protected StateMachine<TStateKey> stateMachine;
         protected string animBoolName;
 
-        public StateBase(T owner, StateMachine<T> stateMachine, string animBoolName)
+        public StateBase(TOwner owner, StateMachine<TStateKey> stateMachine, string animBoolName)
         {
             this.owner = owner;
             this.stateMachine = stateMachine;
@@ -16,14 +18,14 @@ namespace Core.Fsm
 
         public virtual void OnEnter()
         {
-            owner.animator.SetBool(animBoolName, true);
+            // owner.Anim.SetBool(animBoolName, true);
         }
         
         public virtual void OnUpdate() { }
 
         public virtual void OnExit()
         {
-            owner.animator.SetBool(animBoolName, false);
+            // owner.Anim.SetBool(animBoolName, false);
         }
     }
 }

@@ -5,11 +5,7 @@ namespace Manager
 {
     public class GameManager : Singleton<GameManager>
     {
-        public EventManager Event { get; private set; }
-
-        protected override void OnAwake()
-        {
-            Event = new EventManager();
-        }
+        private static EventManager _event;
+        public static EventManager Event => _event ??= new EventManager();
     }
 }

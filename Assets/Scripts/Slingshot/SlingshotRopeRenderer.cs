@@ -102,12 +102,12 @@ namespace Slingshot
         [ContextMenu("BeginPull")]
         public void BeginPull()
         {
-            if (projectile == null)
-            {
-                Debug.LogWarning("[SlingshotRopeRenderer] BeginPull() 被调用，但 projectile 为 null。" +
-                                 "请先调用 SetProjectile() 完成上膛。");
-                return;
-            }
+            // if (projectile == null)
+            // {
+            //     Debug.LogWarning("[SlingshotRopeRenderer] BeginPull() 被调用，但 projectile 为 null。" +
+            //                      "请先调用 SetProjectile() 完成上膛。");
+            //     return;
+            // }
             _state = RopeState.Pulling;
         }
  
