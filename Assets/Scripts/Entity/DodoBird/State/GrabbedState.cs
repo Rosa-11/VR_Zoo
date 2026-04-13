@@ -15,12 +15,34 @@ namespace Entity.DodoBird.State
             : base(owner, stateMachine, animBoolName)
         { }
         
+        /// <summary>当前帧是否在吸附区域内（每帧更新）。</summary>
+        public bool IsNearSnapZone { get; private set; }
+        
         public override void OnEnter()
         {
             base.OnEnter();
-            // XRGrabInteractable 已接管位置，Rigidbody 需切为非 Kinematic
-            // 以配合 XR Interaction Toolkit 的物理抓取模式
-            owner.Rb.isKinematic = false;
+            // XRGrabInteractable 直接控制 Transform，Grabbed 期间无需物理
+            // 保持 kinematic，重力在 Grabbed 状态下不应影响物体
+            owner.Rb.isKinematic = true;
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (owner.SnapZone != null)
+                IsNearSnapZone = owner.SnapZone.IsInsideZone(owner.transform.position);
+        }
+        
+        /// <summary>
+        /// 放手时由 DodoBird.BindGrabEvents 调用。
+        /// 根据当前距离决定传送目标。
+        /// </summary>
+        public void OnReleased()
+        {
+            if (IsNearSnapZone)
+                owner.TeleportToSnapPoint();
+            else
+                owner.TeleportToQueuePosition();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Core.Trajectory;
@@ -54,9 +55,10 @@ namespace Slingshot
             _ropeRenderer = GetComponentInChildren<SlingshotRopeRenderer>();
             _slingshotSnapZone = GetComponentInChildren<SlingshotSnapZone>();
             _slingshotSnapZone.SnapPoint = startPoint;
-
+            
             await InitDodoBird();
             TailSlotPosition = slots[Mathf.Clamp(_queue.Count, 0, slots.Count - 1)].position;
+            // Debug.Log("tail slot position " + TailSlotPosition);
         }
 
         private void Update()
@@ -113,6 +115,7 @@ namespace Slingshot
             _trajectoryPredictor.HidePreview();
             _ropeRenderer.ResetInstant();
             CallNextBird();
+            // Debug.Log("Release!");
         }
  
         /// <summary>
@@ -131,6 +134,7 @@ namespace Slingshot
  
             _queue.Add(bird);
             AssignSlot(bird, tailSlotIndex);
+            Debug.Log("enqueue slot " + tailSlotIndex);
         }
         
         #endregion
@@ -161,10 +165,11 @@ namespace Slingshot
                 // TODO: EventManager 通知关卡管理器所有鸟已发射
                 return;
             }
- 
-            var frontBird = _queue[0];
+
             OnFrontBirdDequeued();
-            frontBird.OnTurnArrived();
+            // await UniTask.Yield(); // 等一帧，让 NavMeshAgent 完成路径规划
+            // var frontBird = _queue[0];
+            // frontBird.OnTurnArrived();
         }
         
         /// <summary>
@@ -179,11 +184,14 @@ namespace Slingshot
                 var bird = birds[i];
                 _queue.Add(bird);
                 AssignSlot(bird, i);
+
+                bird.SnapZone = _slingshotSnapZone;
+                bird.SnapPoint = startPoint.position;
             }
             await UniTask.Yield();
             // 初始化第一只为准备好的状态
-            var frontBird = _queue[0];
-            frontBird.OnTurnArrived();
+            // var frontBird = _queue[0];
+            // frontBird.OnTurnArrived();
         }
         
         /// <summary>
@@ -201,7 +209,7 @@ namespace Slingshot
         private void AssignSlot(DodoBird bird, int slotIndex)
         {
             Vector3 slotPos = slots[slotIndex].position;
-            bird.UpdateQueuePosition(slotPos);
+            bird.UpdateQueuePosition(slotPos, slotIndex);
         }
         
 #if UNITY_EDITOR

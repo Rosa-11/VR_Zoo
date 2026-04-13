@@ -1,3 +1,4 @@
+using System;
 using Core.Evnet;
 using UnityEngine;
 using Core.Fsm;
@@ -33,11 +34,14 @@ namespace Entity.DodoBird
         public NavMeshAgent      NavAgent    { get; private set; }
         public Animator          Anim        { get; private set; }
         public XRGrabInteractable GrabInteractable { get; private set; }
+        public SlingshotSnapZone SnapZone { get; set; }
         
         #endregion
 
         #region Variables
         // ─── 运行时数据（由外部或状态写入，供状态读取）──────────────────────
+        
+        public Vector3 SnapPoint { get; set; }
  
         /// <summary>
         /// 排队时在队列中的世界坐标位置。
@@ -45,13 +49,7 @@ namespace Entity.DodoBird
         /// 在区域外放手时传送回此位置。
         /// </summary>
         public Vector3 QueuePosition { get; set; }
- 
-        /// <summary>
-        /// 弹弓吸附点的世界坐标。
-        /// 由 SlingshotSnapZone 在渡渡鸟进入区域且放手时写入。
-        /// </summary>
-        public Vector3 SnapPoint { get; set; }
-
+        
         /// <summary>
         /// 发射初速度向量（方向 × 速度大小）。
         /// 由弹弓/VR交互系统在 ReadyToLaunch 阶段持续更新，
@@ -64,18 +62,6 @@ namespace Entity.DodoBird
         /// LandingState 据此选择对应的反应动画。
         /// </summary>
         public LandingType PendingLandingType { get; set; }
- 
-        /// <summary>
-        /// 当前是否在弹弓 Snap Zone 触发区域内。
-        /// 由 SlingshotSnapZone 通过 NotifySnapZoneEnter/Exit 维护。
-        /// GrabbedState 在 selectExited 时读取此值以决定传送目标。
-        /// </summary>
-        public bool IsInsideSnapZone { get; private set; }
- 
-        /// <summary>
-        /// Snap Zone 当前提供的吸附坐标（进入区域时缓存）。
-        /// </summary>
-        private Vector3 _pendingSnapPoint;
         
         // ─── FSM ─────────────────────────────────────────────────────────────
  
@@ -121,25 +107,18 @@ namespace Entity.DodoBird
             _fsm.ChangeState(DodoBirdStateType.Landing);
         }
  
-        // ─── Snap Zone 通知接口（由 SlingshotSnapZone 调用）─────────────────
- 
-        /// <summary>渡渡鸟进入 Snap Zone 触发区域时调用。</summary>
-        public void NotifySnapZoneEnter(Vector3 snapPoint)
-        {
-            IsInsideSnapZone  = true;
-            _pendingSnapPoint = snapPoint;
-        }
- 
-        /// <summary>渡渡鸟离开 Snap Zone 触发区域时调用。</summary>
-        public void NotifySnapZoneExit()
-        {
-            IsInsideSnapZone = false;
-        }
- 
         // ─── 对外状态切换接口（EventManager / BirdQueueManager 调用）─────────
  
-        /// <summary>BirdQueueManager 通知轮到此鸟时调用，进入 Waiting 状态。</summary>
-        public void OnTurnArrived() => _fsm.ChangeState(DodoBirdStateType.Waiting);
+        // /// <summary>
+        // /// BirdQueueManager 通知轮到此鸟时调用，进入 Waiting 状态。
+        // /// 仅在 Queuing/Waiting 状态下响应，Flying 等中间状态不理会。
+        // /// </summary>
+        // public void OnTurnArrived()
+        // {
+        //     if (_fsm.IsInState(DodoBirdStateType.Queuing) ||
+        //         _fsm.IsInState(DodoBirdStateType.Waiting))
+        //         _fsm.ChangeState(DodoBirdStateType.Waiting);
+        // }
  
         /// <summary>ReturningState 寻路结束后调用，重新进入 Queuing 状态。</summary>
         public void StartReturning()     => _fsm.ChangeState(DodoBirdStateType.Returning);
@@ -150,11 +129,15 @@ namespace Entity.DodoBird
         /// 若当前不在 Queuing 状态（如正在 Returning 途中），
         /// 仅更新坐标，到达后由 ReturningState 使用最新值。
         /// </summary>
-        public void UpdateQueuePosition(Vector3 newPos)
+        public void UpdateQueuePosition(Vector3 newPos, int slotIndex)
         {
+            IsFirstInQueue = slotIndex == 0;
             QueuePosition = newPos;
             if (_fsm?.CurrentState != null && _fsm.IsInState(DodoBirdStateType.Queuing))
+            {
                 (_fsm.CurrentState as QueuingState)?.MoveTo(newPos);
+                Debug.Log(gameObject.name + "move to slot" + slotIndex);
+            }
         }
         
         /// <summary>
@@ -168,14 +151,19 @@ namespace Entity.DodoBird
         }
  
         /// <summary>
+        /// 查询自己是否是队列第一位的鸟。
+        /// 由 QueuingState 到达目标后调用，自己判断是否进入 Waiting。
+        /// </summary>
+        public bool IsFirstInQueue { get; set; }
+
+        /// <summary>
         /// 在区域内放手 → 传送至吸附点，切换到 ReadyToLaunch。
         /// 由 GrabbedState 调用。
         /// </summary>
-        private async void TeleportToSnapPoint()
+        public async void TeleportToSnapPoint()
         {
-            SnapPoint          = _pendingSnapPoint;
             transform.position = SnapPoint;
-            await UniTask.Yield();
+            await UniTask.WaitForFixedUpdate();
             _fsm.ChangeState(DodoBirdStateType.ReadyToLaunch);
         }
  
@@ -200,10 +188,15 @@ namespace Entity.DodoBird
             // selectEntered：被玩家抓起
             GrabInteractable.selectEntered.AddListener(_ =>
             {
+                // Flying 等中间状态不允许被抓取
+                if (_fsm.IsInState(DodoBirdStateType.Flying) ||
+                    _fsm.IsInState(DodoBirdStateType.Landing) ||
+                    _fsm.IsInState(DodoBirdStateType.Returning))
+                    return;
+
                 if (_fsm.IsInState(DodoBirdStateType.ReadyToLaunch))
                     GameManager.Event.Broadcast("DodoBird.OnPulling", new EventParameter<DodoBird>(this));
-                if (_fsm.IsInState(DodoBirdStateType.Waiting) ||
-                    _fsm.IsInState(DodoBirdStateType.ReadyToLaunch))
+                if (_fsm.IsInState(DodoBirdStateType.Waiting))
                     _fsm.ChangeState(DodoBirdStateType.Grabbed);
             });
  
@@ -213,10 +206,7 @@ namespace Entity.DodoBird
                 if (_fsm.IsInState(DodoBirdStateType.Grabbed))
                 {
                     // 在区域内放手 → 传送到吸附点
-                    if (IsInsideSnapZone)
-                        TeleportToSnapPoint();
-                    else
-                        TeleportToQueuePosition();
+                    (_fsm.CurrentState as GrabbedState)?.OnReleased();
                 }
                 else if (_fsm.IsInState(DodoBirdStateType.ReadyToLaunch))
                 {

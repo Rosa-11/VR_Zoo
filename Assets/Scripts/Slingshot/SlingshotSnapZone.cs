@@ -16,23 +16,18 @@ namespace Slingshot
     /// </summary>
     public class SlingshotSnapZone : MonoBehaviour
     {
-        public Transform SnapPoint { get; set; }
+        [SerializeField] public Transform SnapPoint;
+        [Tooltip("判定进入区域的距离阈值（世界单位）。\n" +
+                 "建议设置为比弹弓视觉范围略大，让玩家有容错空间。")]
+        [Min(0.01f)]
+        [SerializeField] private float detectionRadius = 3f;
         
-        private void OnTriggerEnter(Collider other)
-        {
-            var bird = other.GetComponent<DodoBird>();
-            if (bird == null) return;
- 
-            bird.NotifySnapZoneEnter(SnapPoint.position);
-        }
- 
-        private void OnTriggerExit(Collider other)
-        {
-            var bird = other.GetComponent<DodoBird>();
-            if (bird == null) return;
- 
-            bird.NotifySnapZoneExit();
-        }
+        /// <summary>
+        /// 查询目标位置是否在吸附区域内。
+        /// 由 GrabbedState.OnUpdate() 每帧调用，传入渡渡鸟当前世界坐标。
+        /// </summary>
+        public bool IsInsideZone(Vector3 worldPos) =>
+            Vector3.Distance(worldPos, SnapPoint.position) <= detectionRadius;
  
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
@@ -42,7 +37,7 @@ namespace Slingshot
             Gizmos.color = new Color(0f, 1f, 0.5f, 0.4f);
             Gizmos.DrawSphere(SnapPoint.position, 0.08f);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(SnapPoint.position, 0.08f);
+            Gizmos.DrawWireSphere(SnapPoint.position, detectionRadius);
         }
 #endif
     }
