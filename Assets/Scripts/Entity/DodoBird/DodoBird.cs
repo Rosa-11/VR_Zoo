@@ -150,6 +150,7 @@ namespace Entity.DodoBird
         public void TeleportToQueuePosition()
         {
             transform.position = QueuePosition;
+            transform.rotation = SlingshotController.InitialRotation;
             _fsm.ChangeState(DodoBirdStateType.Waiting);
         }
  
@@ -166,6 +167,7 @@ namespace Entity.DodoBird
         public async void TeleportToSnapPoint()
         {
             transform.position = SnapPoint;
+            // transform.rotation = SlingshotController.InitialRotation;
             await UniTask.WaitForFixedUpdate();
             _fsm.ChangeState(DodoBirdStateType.ReadyToLaunch);
         }

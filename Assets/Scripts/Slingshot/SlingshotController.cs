@@ -37,6 +37,9 @@ namespace Slingshot
         
         // 初始点
         [SerializeField] private Transform startPoint;
+        [Tooltip("发射物Transform的偏差")] 
+        [SerializeField] private Vector3 offset;
+        public static Vector3 Offset { get; private set; }
         // 发射点，实际上就是鸟
         private Transform _firePoint;
         public static Vector3 LaunchVelocity { get; private set; }
@@ -62,12 +65,14 @@ namespace Slingshot
             _slingshotSnapZone = GetComponentInChildren<SlingshotSnapZone>();
             _slingshotSnapZone.SnapPoint = startPoint;
             
-            await InitDodoBird();
-            TailSlotPosition = slots[Mathf.Clamp(_queue.Count, 0, slots.Count - 1)].position;
             // Debug.Log("tail slot position " + TailSlotPosition);
             MinAniDelay = minAniDelay;
             MaxAniDelay = maxAniDelay;
             InitialRotation = initialRotation;
+            Offset = offset;
+            
+            await InitDodoBird();
+            TailSlotPosition = slots[Mathf.Clamp(_queue.Count, 0, slots.Count - 1)].position;
         }
 
         private void Update()
@@ -82,7 +87,7 @@ namespace Slingshot
                     normalizedDir = Vector3.forward; // 给个默认前方
                 }
                 LaunchVelocity = normalizedDir * _launchForce;
-                _trajectoryPredictor.UpdatePreview(_firePoint.position, LaunchVelocity);
+                _trajectoryPredictor.UpdatePreview(_firePoint.position + offset, LaunchVelocity);
                 _trajectoryRenderer.SetForceRatio(_launchForce / maxForce);
             }
         }

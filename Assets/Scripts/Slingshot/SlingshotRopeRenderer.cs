@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Slingshot
 {
@@ -153,7 +154,7 @@ namespace Slingshot
             
             if (projectile)
             {
-                Vector3 center = projectile.position;
+                Vector3 center = projectile.position + SlingshotController.Offset;
                 Vector3 pullVec = center - anchorMid;
                 Vector3 L2R = anchorRight.position - anchorLeft.position;
                 if (pullVec.sqrMagnitude > 0.0001f)
