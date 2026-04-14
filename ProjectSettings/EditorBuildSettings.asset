@@ -9,11 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Scene0.unity
     guid: a3210984413677a44b92d81c9f1e1ef1
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
-    path: Assets/Samples/XR Interaction Toolkit/2.5.4/Hands Interaction Demo/HandsDemoScene.unity
-    guid: 3ff35cecbcc52cc42945cf531638a60a
+    path: Assets/Scenes/Scene1.unity
+    guid: 406961c15d1c14f4a8ce79fb83633d7c
   m_configObjects:
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: f7f781bc5322c5748bf7c83a664d4bfd,
       type: 2}
