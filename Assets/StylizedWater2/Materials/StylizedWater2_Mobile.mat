@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: StylizedWater2_Mobile
+  m_Shader: {fileID: -6465566751694194690, guid: d7b0192b9bf19c949900035fa781fdc4, type: 3}
+  m_Parent: {fileID: 2100000, guid: a0b5f77a73da34b4aa3402decf70e1c7, type: 2}
+  m_ModifiedSerializedProperties: 4
+  m_ValidKeywords:
+  - _ENVIRONMENTREFLECTIONS_OFF
+  - _FOAM
+  - _NORMALMAP
+  - _RECEIVE_SHADOWS_OFF
+  - _SHARP_INERSECTION
+  - _UNLIT
+  m_InvalidKeywords:
+  - ADVANCED_LIGHTING
+  - _CROSSPAN_INTERSECTION
+  - _DEPTHEXP_ON
+  - _DEPTH_TEX
+  - _RECEIVEDYNAMICEFFECTS_ON
+  - _SIMPLE_LIGHTING
+  - _WORLDSPACEUV_ON
+  - _ZCLIP_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: 2e10c404ec8e1ff41bff06b82e5569df, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTexDynamic:
+        m_Texture: {fileID: 2800000, guid: 2e10c404ec8e1ff41bff06b82e5569df, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _CausticsBrightness: 4.83
+    - _CausticsDistortion: 0.15
+    - _CrossPan_IntersectionOn: 0
+    - _Depth: 5.01
+    - _DepthHorizontal: 1
+    - _DepthVertical: 4
+    - _EdgeFade: 7.37
+    - _EnvironmentReflectionsOn: 0
+    - _FlatShadingOn: 0
+    - _FoamClipping: 0.98
+    - _FoamOn: 1
+    - _FoamOpacity: 0.253
+    - _FoamSize: 0.01
+    - _FoamSpeed: 0.030000014
+    - _FoamTiling: 0.049999908
+    - _FoamWaveMask: 0
+    - _HorizonDistance: 10.4
+    - _IntersectionClipping: 0.428
+    - _IntersectionLength: 1.79
+    - _IntersectionRippleDist: 64
+    - _IntersectionRippleStrength: 0.355
+    - _IntersectionSpeed: 0.06000001
+    - _IntersectionTiling: 0.16999984
+    - _LightingOn: 0
+    - _NormalMapOn: 1
+    - _NormalSpeed: 0.5
+    - _NormalStrength: 1
+    - _NormalTiling: 0.29999992
+    - _ReflectionBlur: 0
+    - _ReflectionDistortion: 0.086
+    - _ReflectionFresnel: 5
+    - _ReflectionStrength: 0.248
+    - _RefractionStrength: 0.267
+    - _ShadingMode: 0
+    - _ShoreLineLength: 0
+    - _ShoreLineWaveDistance: 23
+    - _ShoreLineWaveStr: 1
+    - _SparkleIntensity: 4
+    - _SparkleSize: 0.7
+    - _SunReflectionDistortion: 0.71
+    - _SunReflectionPerturbance: 0.548
+    - _SunReflectionSize: 0.948
+    - _SunReflectionStrength: 10
+    - _Texture_IntersectionOn: 1
+    - _Translucency: 0
+    - _TranslucencyCurvatureMask: 0
+    - _TranslucencyExp: 4
+    - _TranslucencyOn: 0
+    - _WaveDistance: 0.763
+    - _WaveHeight: 0
+    - _WaveNormalStr: 0.291
+    - _WaveSpeed: 1
+    - _WaveSteepness: 0
+    - _WaveTint: 0.029
+    - _WavesOn: 0
+    m_Colors:
+    - _BaseColor: {r: 0, g: 0.16451614, b: 0.34, a: 0.9647059}
+    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _DepthMapBounds: {r: -402.3, g: -459.43, b: 0.0012693577, a: 0}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+    - _HorizonColor: {r: 0.2352941, g: 0.9051294, b: 1, a: 1}
+    - _NormalTiling: {r: 0.3, g: 0.3, b: 0, a: 0}
+    - _ShallowColor: {r: 0, g: 0.8446603, b: 1, a: 0.39607844}
+    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  m_BuildTextureStacks: []
+--- !u!114 &6498140463000427223
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1
