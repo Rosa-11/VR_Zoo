@@ -63,6 +63,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DodoBird_Lite
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: dfbdf1a58b8295f4ca19f28606b5d04d,
+        type: 3}
+      propertyPath: m_TagString
+      value: DodoBird
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Camera0
   - Hand
+  - DodoBird
+  - Fruit
   layers:
   - Default
   - TransparentFX

@@ -98,6 +98,7 @@ namespace Slingshot
             GameManager.Event.Register("DodoBird.OnPulling", new Event<DodoBird>(OnPulling));
             GameManager.Event.Register("DodoBird.OnRelease", new Event<DodoBird>(OnRelease));
             GameManager.Event.Register("DodoBird.Enqueue", new Event<DodoBird>(EnqueueReturningBird));
+            GameManager.Event.Register("DodoBird.HitFruit", new Event<SlingshotFruitType>(OnFruitHit));
         }
 
         private void OnDisable()
@@ -111,6 +112,11 @@ namespace Slingshot
         #endregion
         
         #region EventMethods
+
+        private void OnFruitHit(SlingshotFruitType type)
+        {
+            Debug.Log("射中了" + type + "的果子！");
+        }
 
         private void OnPulling(DodoBird dodoBird)
         {

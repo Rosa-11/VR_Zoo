@@ -39,6 +39,8 @@ namespace Entity.DodoBird
 
         #region Variables
         // ─── 运行时数据（由外部或状态写入，供状态读取）──────────────────────
+
+        private static int _landLayer;
         
         public Vector3 SnapPoint { get; set; }
  
@@ -80,6 +82,7 @@ namespace Entity.DodoBird
             FetchComponents();
             BindGrabEvents();
             BuildFsm();
+            _landLayer = LayerMask.NameToLayer("Land");
         }
  
         private void Start()
@@ -104,7 +107,7 @@ namespace Entity.DodoBird
             //                    : collision.gameObject.CompareTag(TAG_TREE)  ? LandingType.Stunned
             //                    : LandingType.Miss;
 
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Land"))
+            if (collision.gameObject.layer == _landLayer)
             {
                 _fsm.ChangeState(DodoBirdStateType.Landing);
             }
