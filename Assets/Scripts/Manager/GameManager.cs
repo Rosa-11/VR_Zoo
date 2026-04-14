@@ -7,5 +7,8 @@ namespace Manager
     {
         private static EventManager _event;
         public static EventManager Event => _event ??= new EventManager();
+        
+        private static AssetLoader _assetLoader;
+        public static AssetLoader AssetLoader => _assetLoader ??= new AssetLoader();
     }
 }

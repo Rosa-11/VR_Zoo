@@ -32,6 +32,7 @@ namespace Slingshot
         private readonly List<DodoBird> _queue = new();
         // 队尾坐标
         public static Vector3 TailSlotPosition;
+        public static Quaternion InitialRotation = Quaternion.Euler(0, 90, 0);
         
         // 初始点
         [SerializeField] private Transform startPoint;
@@ -181,7 +182,8 @@ namespace Slingshot
             _queue.Clear();
             for (int i = 0; i < birds.Count; i++)
             {
-                var bird = birds[i];
+                GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
+                DodoBird bird = Instantiate(birdGameObject, slots[i].position, InitialRotation).GetComponent<DodoBird>();
                 _queue.Add(bird);
                 AssignSlot(bird, i);
 

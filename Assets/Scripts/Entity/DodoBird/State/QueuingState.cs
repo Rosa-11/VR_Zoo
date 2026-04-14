@@ -1,5 +1,6 @@
+using System.Threading;
 using Core.Fsm;
-using Manager;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Entity.DodoBird.State
@@ -9,7 +10,7 @@ namespace Entity.DodoBird.State
     /// 收到 BirdQueueManager 的新槽位时重新导航。
     /// 退出条件：BirdQueueManager 调用 OnTurnArrived()。
     /// </summary>
-    public class QueuingState : StateBase<DodoBird, DodoBirdStateType>
+    public class QueuingState : IdleSuperState
     {
         public QueuingState(DodoBird owner, StateMachine<DodoBirdStateType> stateMachine, string animBoolName) 
             : base(owner, stateMachine, animBoolName)
@@ -43,7 +44,7 @@ namespace Entity.DodoBird.State
             if (owner.NavAgent.remainingDistance <= ARRIVAL_THRESHOLD)
             {
                 owner.NavAgent.ResetPath();
-                _isMoving = false;
+                SetMove(false);
             }
         }
         
@@ -53,6 +54,7 @@ namespace Entity.DodoBird.State
             owner.NavAgent.ResetPath();
             owner.NavAgent.enabled = false;
             _isMoving = false;
+            owner.Anim.SetBool("Walk", false);
         }
         
         /// <summary>
@@ -63,7 +65,24 @@ namespace Entity.DodoBird.State
             if (!owner.NavAgent.enabled) return;
 
             owner.NavAgent.SetDestination(destination);
-            _isMoving = true;
+            SetMove(true);
+        }
+
+        private void SetMove(bool isMoving)
+        {
+            _isMoving = isMoving;
+            owner.Anim.SetBool("Walk", isMoving);
+            
+            if (isMoving)
+            {
+                // 开始行走：调用父类方法安全停止闲置动画
+                StopRandomAnim();
+            }
+            else
+            {
+                // 停止行走：调用父类方法安全重新启动闲置动画
+                StartRandomAnim();
+            }
         }
     }
 }

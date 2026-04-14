@@ -1,5 +1,5 @@
 using Core.Fsm;
-using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace Entity.DodoBird.State
 {
@@ -24,7 +24,7 @@ namespace Entity.DodoBird.State
         // private const float DURATION_MISS    = 1.8f;
         // private const float DURATION_STUNNED = 1.5f;
         
-        public override void OnEnter()
+        public override async void OnEnter()
         {
             base.OnEnter();
             // _timer = 0f;
@@ -45,6 +45,7 @@ namespace Entity.DodoBird.State
             // }
             
             // TODO:先暂时直接退出
+            await UniTask.WaitForSeconds(1f);
             stateMachine.ChangeState(DodoBirdStateType.Returning);
         }
  

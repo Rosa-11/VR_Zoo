@@ -1,3 +1,4 @@
+using System;
 using Entity.DodoBird;
 
 namespace Core.Fsm
@@ -18,14 +19,16 @@ namespace Core.Fsm
 
         public virtual void OnEnter()
         {
-            // owner.Anim.SetBool(animBoolName, true);
+            if (!String.IsNullOrEmpty(animBoolName))
+                owner.Anim.SetBool(animBoolName, true);
         }
         
         public virtual void OnUpdate() { }
 
         public virtual void OnExit()
         {
-            // owner.Anim.SetBool(animBoolName, false);
+            if (!String.IsNullOrEmpty(animBoolName))
+                owner.Anim.SetBool(animBoolName, false);
         }
     }
 }

@@ -16,7 +16,22 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 66258427812165948ba7a0a33f3a82e6
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 2b365d7cf0ab5524aa5739916a0ffb5f
+    m_Address: DodoBird_Chief
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbeef20fc6fb8c246861507758655f7f
+    m_Address: DodoBird_Normal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c85321c1748ede74b8f599aeea4ef490
+    m_Address: DodoBird_Lite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1ab5d560a7ce443498baf197504b29a7, type: 2}
   m_SchemaSet:

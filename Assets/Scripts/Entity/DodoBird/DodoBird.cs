@@ -1,11 +1,10 @@
-using System;
 using Core.Evnet;
-using UnityEngine;
 using Core.Fsm;
 using Cysharp.Threading.Tasks;
 using Entity.DodoBird.State;
 using Manager;
 using Slingshot;
+using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -48,7 +47,7 @@ namespace Entity.DodoBird
         /// 由 BirdQueueManager 在分配渡渡鸟时写入。
         /// 在区域外放手时传送回此位置。
         /// </summary>
-        public Vector3 QueuePosition { get; set; }
+        private Vector3 QueuePosition { get; set; }
         
         /// <summary>
         /// 发射初速度向量（方向 × 速度大小）。
@@ -67,10 +66,10 @@ namespace Entity.DodoBird
  
         private StateMachine<DodoBirdStateType> _fsm;
  
-        // ─── Tag 常量（与 Unity Inspector 中的 Tag 保持一致）────────────────
- 
-        private const string TAG_FRUIT = "Fruit";
-        private const string TAG_TREE  = "Tree";
+        // // ─── Tag 常量（与 Unity Inspector 中的 Tag 保持一致）────────────────
+        //
+        // private const string TAG_FRUIT = "Fruit";
+        // private const string TAG_TREE  = "Tree";
         
         #endregion
  
@@ -85,6 +84,7 @@ namespace Entity.DodoBird
  
         private void Start()
         {
+            GrabInteractable.throwOnDetach = false;
             _fsm.Initialize(DodoBirdStateType.Queuing);
         }
  
@@ -100,11 +100,14 @@ namespace Entity.DodoBird
             // 仅在飞行状态下响应碰撞
             if (!_fsm.IsInState(DodoBirdStateType.Flying)) return;
  
-            PendingLandingType = collision.gameObject.CompareTag(TAG_FRUIT) ? LandingType.Hit
-                               : collision.gameObject.CompareTag(TAG_TREE)  ? LandingType.Stunned
-                               : LandingType.Miss;
- 
-            _fsm.ChangeState(DodoBirdStateType.Landing);
+            // PendingLandingType = collision.gameObject.CompareTag(TAG_FRUIT) ? LandingType.Hit
+            //                    : collision.gameObject.CompareTag(TAG_TREE)  ? LandingType.Stunned
+            //                    : LandingType.Miss;
+
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Land"))
+            {
+                _fsm.ChangeState(DodoBirdStateType.Landing);
+            }
         }
  
         // ─── 对外状态切换接口（EventManager / BirdQueueManager 调用）─────────
@@ -154,7 +157,7 @@ namespace Entity.DodoBird
         /// 查询自己是否是队列第一位的鸟。
         /// 由 QueuingState 到达目标后调用，自己判断是否进入 Waiting。
         /// </summary>
-        public bool IsFirstInQueue { get; set; }
+        public bool IsFirstInQueue { get; private set; }
 
         /// <summary>
         /// 在区域内放手 → 传送至吸附点，切换到 ReadyToLaunch。
@@ -171,7 +174,7 @@ namespace Entity.DodoBird
         /// 进入发射状态。由 ReadyToLaunchState 在 selectExited 时调用。
         /// LaunchVelocity 应在此之前由弹弓/VR系统写入。
         /// </summary>
-        public void Launch() => _fsm.ChangeState(DodoBirdStateType.Flying);
+        private void Launch() => _fsm.ChangeState(DodoBirdStateType.Flying);
  
         // ─── 私有初始化 ──────────────────────────────────────────────────────
  
@@ -219,13 +222,13 @@ namespace Entity.DodoBird
         private void BuildFsm()
         {
             _fsm = new StateMachine<DodoBirdStateType>();
-            _fsm.AddState(DodoBirdStateType.Queuing,       new QueuingState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.Waiting,       new WaitingState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.Grabbed,       new GrabbedState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.ReadyToLaunch, new ReadyToLaunchState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.Flying,        new FlyingState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.Landing,       new LandingState(this, _fsm, "Queuing"));
-            _fsm.AddState(DodoBirdStateType.Returning,     new ReturningState(this, _fsm, "Queuing"));
+            _fsm.AddState(DodoBirdStateType.Queuing,       new QueuingState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.Waiting,       new WaitingState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.Grabbed,       new GrabbedState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.ReadyToLaunch, new ReadyToLaunchState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.Flying,        new FlyingState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.Landing,       new LandingState(this, _fsm, null));
+            _fsm.AddState(DodoBirdStateType.Returning,     new ReturningState(this, _fsm, "Walk"));
  
             _fsm.OnStateChanged += (from, to) =>
                 Debug.Log($"[DodoBird:{name}] {from} → {to}");
