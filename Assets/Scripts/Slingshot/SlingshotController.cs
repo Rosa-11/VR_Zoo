@@ -26,22 +26,27 @@ namespace Slingshot
         [Header("槽位（按从前到后顺序排列）")]
         [Tooltip("场景中的站位 Transform，index 0 = 最靠近弹弓的位置。")]
         [SerializeField] private List<Transform> slots = new();
-        // 临时拖进去
-        [SerializeField] private List<DodoBird> birds = new();
+        // // 临时拖进去
+        // [SerializeField] private List<DodoBird> birds = new();
         /// <summary>当前排队中的鸟，按槽位顺序排列（index 0 = 队首）。</summary>
         private readonly List<DodoBird> _queue = new();
         // 队尾坐标
         public static Vector3 TailSlotPosition;
-        public static Quaternion InitialRotation = Quaternion.Euler(0, 90, 0);
+        [SerializeField] private Quaternion initialRotation = Quaternion.Euler(0, 90, 0);
+        public static Quaternion InitialRotation { get; private set; }
         
         // 初始点
         [SerializeField] private Transform startPoint;
         // 发射点，实际上就是鸟
         private Transform _firePoint;
-        public static Vector3 LaunchVelocity;
+        public static Vector3 LaunchVelocity { get; private set; }
         private Vector3 _launchDirection;
         private float _launchForce;
         [SerializeField] private float maxForce = 30f;
+        [SerializeField] private float minAniDelay = 5f;
+        public static float MinAniDelay { get; private set; }
+        [SerializeField] private float maxAniDelay = 10f;
+        public static float MaxAniDelay { get; private set; }
 
         private bool _isPulling;
 
@@ -60,6 +65,9 @@ namespace Slingshot
             await InitDodoBird();
             TailSlotPosition = slots[Mathf.Clamp(_queue.Count, 0, slots.Count - 1)].position;
             // Debug.Log("tail slot position " + TailSlotPosition);
+            MinAniDelay = minAniDelay;
+            MaxAniDelay = maxAniDelay;
+            InitialRotation = initialRotation;
         }
 
         private void Update()
@@ -135,7 +143,7 @@ namespace Slingshot
  
             _queue.Add(bird);
             AssignSlot(bird, tailSlotIndex);
-            Debug.Log("enqueue slot " + tailSlotIndex);
+            // Debug.Log("enqueue slot " + tailSlotIndex);
         }
         
         #endregion
@@ -180,7 +188,7 @@ namespace Slingshot
         private async UniTask InitDodoBird()
         {
             _queue.Clear();
-            for (int i = 0; i < birds.Count; i++)
+            for (int i = 0; i < slots.Count; i++)
             {
                 GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
                 DodoBird bird = Instantiate(birdGameObject, slots[i].position, InitialRotation).GetComponent<DodoBird>();
