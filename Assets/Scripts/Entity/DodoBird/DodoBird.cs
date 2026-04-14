@@ -139,7 +139,7 @@ namespace Entity.DodoBird
             if (_fsm?.CurrentState != null && _fsm.IsInState(DodoBirdStateType.Queuing))
             {
                 (_fsm.CurrentState as QueuingState)?.MoveTo(newPos);
-                Debug.Log(gameObject.name + "move to slot" + slotIndex);
+                // Debug.Log(gameObject.name + "move to slot" + slotIndex);
             }
         }
         
@@ -150,6 +150,7 @@ namespace Entity.DodoBird
         public void TeleportToQueuePosition()
         {
             transform.position = QueuePosition;
+            transform.rotation = SlingshotController.InitialRotation;
             _fsm.ChangeState(DodoBirdStateType.Waiting);
         }
  
@@ -166,6 +167,7 @@ namespace Entity.DodoBird
         public async void TeleportToSnapPoint()
         {
             transform.position = SnapPoint;
+            // transform.rotation = SlingshotController.InitialRotation;
             await UniTask.WaitForFixedUpdate();
             _fsm.ChangeState(DodoBirdStateType.ReadyToLaunch);
         }
@@ -230,8 +232,8 @@ namespace Entity.DodoBird
             _fsm.AddState(DodoBirdStateType.Landing,       new LandingState(this, _fsm, null));
             _fsm.AddState(DodoBirdStateType.Returning,     new ReturningState(this, _fsm, "Walk"));
  
-            _fsm.OnStateChanged += (from, to) =>
-                Debug.Log($"[DodoBird:{name}] {from} → {to}");
+            // _fsm.OnStateChanged += (from, to) =>
+            //     Debug.Log($"[DodoBird:{name}] {from} → {to}");
         }
     }
 }

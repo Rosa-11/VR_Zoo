@@ -15,7 +15,7 @@ namespace Entity.DodoBird.State
         { }
         
         private const float ARRIVAL_THRESHOLD = 0.2f;
-        private const float ROTATION_SPEED = 360f; // 转身速度（度/秒）
+        private const float ROTATION_SPEED = 180f; // 转身速度（度/秒）
         
         private CancellationTokenSource _cts;
 

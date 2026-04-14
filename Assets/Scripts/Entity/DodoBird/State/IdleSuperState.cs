@@ -1,6 +1,7 @@
 using System.Threading;
 using Core.Fsm;
 using Cysharp.Threading.Tasks;
+using Slingshot;
 using UnityEngine;
 
 namespace Entity.DodoBird.State
@@ -12,16 +13,13 @@ namespace Entity.DodoBird.State
         {
         }
 
-        protected float MinDelay = 5f;
-        protected float MaxDelay = 10f;
+        private CancellationTokenSource _cts;
 
-        protected CancellationTokenSource _cts;
-        
-        protected async UniTaskVoid PlayRandomAnimLoop(CancellationToken ct)
+        private async UniTaskVoid PlayRandomAnimLoop(CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
-                float delay = Random.Range(MinDelay, MaxDelay);
+                float delay = Random.Range(SlingshotController.MinAniDelay, SlingshotController.MaxAniDelay);
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: ct)
                     .SuppressCancellationThrow();
 
@@ -29,17 +27,7 @@ namespace Entity.DodoBird.State
 
                 int rand = Random.Range(0, 2);
                 owner.Anim.SetTrigger(rand == 0 ? "Shake" : "Peck");
-                Debug.Log("Triggerred by " + stateMachine.CurrentKey);
-            }
-        }
-        
-        private void CleanupCancellationToken()
-        {
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts.Dispose();
-                _cts = null; // 【关键修复】Dispose 后必须置空，否则下次 Cancel 会抛出异常！
+                // Debug.Log("Triggerred by " + stateMachine.CurrentKey);
             }
         }
         
