@@ -212,10 +212,13 @@ namespace Slingshot
         /// <summary>
         /// 队首离队后，将队列中所有鸟向前移动一个槽位。
         /// </summary>
-        private void ShiftQueueForward()
+        private async void ShiftQueueForward()
         {
             for (int i = 0; i < _queue.Count; i++)
+            {
                 AssignSlot(_queue[i], i);
+                await UniTask.WaitForSeconds(1f);
+            }
         }
  
         /// <summary>
