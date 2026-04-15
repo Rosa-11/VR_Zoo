@@ -98,7 +98,7 @@ namespace Slingshot
             GameManager.Event.Register("DodoBird.OnPulling", new Event<DodoBird>(OnPulling));
             GameManager.Event.Register("DodoBird.OnRelease", new Event<DodoBird>(OnRelease));
             GameManager.Event.Register("DodoBird.Enqueue", new Event<DodoBird>(EnqueueReturningBird));
-            GameManager.Event.Register("DodoBird.HitFruit", new Event<SlingshotFruitType>(OnFruitHit));
+            // GameManager.Event.Register("DodoBird.HitFruit", new Event<SlingshotFruitType>(OnFruitHit));
         }
 
         private void OnDisable()
@@ -107,7 +107,7 @@ namespace Slingshot
             GameManager.Event.Unregister("DodoBird.OnPulling");
             GameManager.Event.Unregister("DodoBird.OnRelease");
             GameManager.Event.Unregister("DodoBird.Enqueue");
-            GameManager.Event.Unregister("DodoBird.HitFruit");
+            // GameManager.Event.Unregister("DodoBird.HitFruit");
         }
         
         #endregion
