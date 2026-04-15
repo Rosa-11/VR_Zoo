@@ -107,6 +107,7 @@ namespace Slingshot
             GameManager.Event.Unregister("DodoBird.OnPulling");
             GameManager.Event.Unregister("DodoBird.OnRelease");
             GameManager.Event.Unregister("DodoBird.Enqueue");
+            GameManager.Event.Unregister("DodoBird.HitFruit");
         }
         
         #endregion
@@ -115,7 +116,12 @@ namespace Slingshot
 
         private void OnFruitHit(SlingshotFruitType type)
         {
-            Debug.Log("射中了" + type + "的果子！");
+            int score = type switch
+            {
+                SlingshotFruitType.Normal => 10,
+                _ => 0,
+            };
+            UIManager.Instance.AddScore(score);
         }
 
         private void OnPulling(DodoBird dodoBird)
