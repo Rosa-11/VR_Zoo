@@ -2101,6 +2101,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 351803095714826553, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
+      propertyPath: m_CameraYOffset
+      value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 351803095714826553, guid: e9b56588b5bce02438275de01097f0b3,
+        type: 3}
       propertyPath: m_RequestedTrackingOriginMode
       value: 1
       objectReference: {fileID: 0}
@@ -7066,17 +7071,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2028438472}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalRotation: {x: -0, y: 0.9535507, z: -0, w: 0.30123267}
+  m_LocalPosition: {x: 0, y: 0, z: -0.08617407}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 409887018}
   m_Father: {fileID: 965260407}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 144.937, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.58, y: 2.2210007}
+  m_AnchoredPosition: {x: 0.30721736, y: 2.2210007}
   m_SizeDelta: {x: 3, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2028438474
