@@ -33,6 +33,9 @@ public class UIManager : MonoBehaviour
     [Header("UI状态")]
     [SerializeField] private bool isDialogActive = false;
     [SerializeField] private bool isTyping = false;
+    
+    [Header("初始时分数的显示与否（暂时）")]
+    [SerializeField] private bool isInitialShowScore = false;
 
     // 私有变量
     private CanvasGroup selfDialogCanvasGroup;
@@ -78,7 +81,7 @@ public class UIManager : MonoBehaviour
         HideAllDialogs();
 
         // 显示分数面板
-        ShowScoreAimPanel(false);
+        ShowScoreAimPanel(isInitialShowScore);
 
         // 初始化分数显示
         UpdateScoreDisplay();
