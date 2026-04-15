@@ -88,9 +88,9 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5230212, g: 0.6446541, b: 0.7735849, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MatcapColor: {r: 0.7020093, g: 0.9748427, b: 0.9738865, a: 1}
+    - _MatcapColor: {r: 0.2569518, g: 0.3334424, b: 0.40251565, a: 1}
     - _OutlineColor: {r: 0.5836398, g: 0.6626427, b: 0.81761, a: 1}
-    - _ShadowColor: {r: 0.21383637, g: 0.050433073, b: 0.050433073, a: 1}
+    - _ShadowColor: {r: 0.57232696, g: 0.2825639, b: 0.2825639, a: 1}
   m_BuildTextureStacks: []
