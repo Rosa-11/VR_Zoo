@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace Slingshot
 {
-    public enum SlingshotFruitType
-    {
-        Normal,
-    }
-    
     [RequireComponent(typeof(Rigidbody))]
     public class SlingshotFruit : MonoBehaviour
     {
