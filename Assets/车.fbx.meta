@@ -3,7 +3,57 @@ guid: 602a7907fa7b8a54fa135486372c5a85
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: a0ed414ccae262b499e93d9dba438c7e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.006
+    second: {fileID: 2100000, guid: 780a751272ffcbd418cf520840fa02ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.024"
+    second: {fileID: 2100000, guid: 365df064ffb34394a9a2ba1b7d88e8e3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.025"
+    second: {fileID: 2100000, guid: cd6e6be60f19a5f40907d317d7f42817, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.026"
+    second: {fileID: 2100000, guid: 135b7a28250579f4d93b3009baae3bc8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.027"
+    second: {fileID: 2100000, guid: 8e273ce018e2ad4439600d812873c685, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.030"
+    second: {fileID: 2100000, guid: 29e1363459fef6a48b04c95b91b4eb60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.031"
+    second: {fileID: 2100000, guid: 32d55f1fd5543b54dac113b8582f208d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.033"
+    second: {fileID: 2100000, guid: f0d04950bb00439489e8c11576a60f9b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.034"
+    second: {fileID: 2100000, guid: 227f089b1ee2b0843aadaffe4740b088, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -16,6 +66,8 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

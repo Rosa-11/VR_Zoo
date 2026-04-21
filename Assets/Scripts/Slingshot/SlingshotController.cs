@@ -23,6 +23,9 @@ namespace Slingshot
         private SlingshotRopeRenderer _ropeRenderer;
         private SlingshotSnapZone _slingshotSnapZone;
         
+        [Header("Birds' Parent Transform")]
+        [SerializeField] private Transform birdParent;
+        
         [Header("槽位（按从前到后顺序排列）")]
         [Tooltip("场景中的站位 Transform，index 0 = 最靠近弹弓的位置。")]
         [SerializeField] private List<Transform> slots = new();
@@ -208,7 +211,8 @@ namespace Slingshot
             for (int i = 0; i < slots.Count; i++)
             {
                 GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
-                DodoBird bird = Instantiate(birdGameObject, slots[i].position, InitialRotation).GetComponent<DodoBird>();
+                DodoBird bird = Instantiate(birdGameObject, slots[i].position, InitialRotation, birdParent)
+                    .GetComponent<DodoBird>();
                 _queue.Add(bird);
                 AssignSlot(bird, i);
 

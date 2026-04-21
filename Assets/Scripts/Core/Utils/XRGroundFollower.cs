@@ -35,27 +35,27 @@ namespace Core.Utils
             }
         }
         
-        // #if UNITY_EDITOR
-        // void OnDrawGizmos()
-        // {
-        //     if (_camTransform == null) return;
-        //
-        //     // 射线发射起点
-        //     Vector3 rayStart = _camTransform.position;
-        //     // 射线终点
-        //     Vector3 rayEnd = rayStart + Vector3.down * rayHeight;
-        //
-        //     // 画射线
-        //     Gizmos.color = Color.magenta;
-        //     Gizmos.DrawLine(rayStart, rayEnd);
-        //
-        //     // 如果撞到地面，画一个小球标记
-        //     if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, rayHeight, _layerMask))
-        //     {
-        //         Gizmos.color = Color.red;
-        //         Gizmos.DrawSphere(hit.point, 0.15f);
-        //     }
-        // }
-        // #endif
+#if UNITY_EDITOR
+        void OnDrawGizmosSelected()
+        {
+            if (_camTransform == null) return;
+        
+            // 射线发射起点
+            Vector3 rayStart = _camTransform.position;
+            // 射线终点
+            Vector3 rayEnd = rayStart + Vector3.down * rayHeight;
+        
+            // 画射线
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(rayStart, rayEnd);
+        
+            // 如果撞到地面，画一个小球标记
+            if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, rayHeight, _layerMask))
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(hit.point, 0.15f);
+            }
+        }
+#endif
     }
 }
