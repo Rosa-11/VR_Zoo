@@ -54,6 +54,8 @@ namespace Slingshot
         private Tweener  _scorePunchTween;
         private Sequence _deltaSequence;
 
+        private SlingshotScore _slingshotScore;
+
         // ─── 生命周期 ────────────────────────────────────────────────────────
 
         private void Awake()
@@ -61,10 +63,12 @@ namespace Slingshot
             _scoreLabelOriginScale = Vector3.one;
 
             // 隐藏浮动标签初始状态
-            SetDeltaAlpha(0f);
+            // SetDeltaAlpha(0f);
 
             if (vrCamera == null && Camera.main != null)
                 vrCamera = Camera.main.transform;
+            
+            _slingshotScore = GetComponentInChildren<SlingshotScore>();
         }
 
         private void LateUpdate()
@@ -79,7 +83,7 @@ namespace Slingshot
         private void OnDestroy()
         {
             _scorePunchTween?.Kill();
-            _deltaSequence?.Kill();
+            // _deltaSequence?.Kill();
         }
 
         // ─── 公开 API（由 ChiefBird 调用）───────────────────────────────────
@@ -110,36 +114,37 @@ namespace Slingshot
         /// <param name="isCombo">是否为连击奖励</param>
         public void ShowDelta(int delta, bool isGolden = false, bool isCombo = false)
         {
-            // 打断上一次动画
-            _deltaSequence?.Kill();
-            SetDeltaAlpha(1f);
-
-            scoreDeltaLabel.text  = $"+{delta}";
-            scoreDeltaLabel.color = isGolden ? colorGolden
-                                  : isCombo  ? colorCombo
-                                  : colorNormal;
-
-            Vector3 startPos = scoreDeltaLabel.transform.localPosition;
-            Vector3 endPos   = startPos + Vector3.up * deltaFloatHeight;
-
-            float fadeDelay  = deltaLifetime * deltaFadeStart;
-            float fadeDuration = deltaLifetime * (1f - deltaFadeStart);
-
-            _deltaSequence = DOTween.Sequence()
-                .Append(scoreDeltaLabel.transform
-                    .DOLocalMove(endPos, deltaLifetime)
-                    .SetEase(Ease.OutCubic))
-                .Insert(fadeDelay, DOTween.To(
-                    () => scoreDeltaLabel.alpha,
-                    v  => scoreDeltaLabel.alpha = v,
-                    0f, fadeDuration))
-                .OnComplete(() =>
-                {
-                    // 动画结束后重置位置，准备下一次播放
-                    scoreDeltaLabel.transform.localPosition = startPos;
-                    SetDeltaAlpha(0f);
-                })
-                .SetLink(gameObject);
+            _slingshotScore.PlayAddScoreAni(delta);
+            // // 打断上一次动画
+            // _deltaSequence?.Kill();
+            // SetDeltaAlpha(1f);
+            //
+            // scoreDeltaLabel.text  = $"+{delta}";
+            // scoreDeltaLabel.color = isGolden ? colorGolden
+            //                       : isCombo  ? colorCombo
+            //                       : colorNormal;
+            //
+            // Vector3 startPos = scoreDeltaLabel.transform.localPosition;
+            // Vector3 endPos   = startPos + Vector3.up * deltaFloatHeight;
+            //
+            // float fadeDelay  = deltaLifetime * deltaFadeStart;
+            // float fadeDuration = deltaLifetime * (1f - deltaFadeStart);
+            //
+            // _deltaSequence = DOTween.Sequence()
+            //     .Append(scoreDeltaLabel.transform
+            //         .DOLocalMove(endPos, deltaLifetime)
+            //         .SetEase(Ease.OutCubic))
+            //     .Insert(fadeDelay, DOTween.To(
+            //         () => scoreDeltaLabel.alpha,
+            //         v  => scoreDeltaLabel.alpha = v,
+            //         0f, fadeDuration))
+            //     .OnComplete(() =>
+            //     {
+            //         // 动画结束后重置位置，准备下一次播放
+            //         scoreDeltaLabel.transform.localPosition = startPos;
+            //         SetDeltaAlpha(0f);
+            //     })
+            //     .SetLink(gameObject);
         }
 
         /// <summary>

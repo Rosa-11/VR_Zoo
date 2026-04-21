@@ -3,6 +3,8 @@ namespace Slingshot
     public enum SlingshotFruitType
     {
         Normal,
+        Rare,
+        Epic,
         GoldenFruit,
     }
     
@@ -14,6 +16,8 @@ namespace Slingshot
         public static int GetScore(this SlingshotFruitType type) => type switch
         {
             SlingshotFruitType.Normal      => 10,
+            SlingshotFruitType.Rare        => 20,
+            SlingshotFruitType.Epic        => 30,
             SlingshotFruitType.GoldenFruit => 50,
             _                              => 0
         };
