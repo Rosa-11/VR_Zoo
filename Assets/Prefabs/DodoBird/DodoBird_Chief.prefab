@@ -61,7 +61,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: e894bb667daa5754c81e669505420eea,
         type: 3}
       propertyPath: m_Name
-      value: "\u6E21\u6E21\u9E1F\u914B\u957F"
+      value: DodoBird_Chief
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
