@@ -38,6 +38,7 @@ namespace Slingshot
         [Tooltip("发射物Transform的偏差")] 
         [SerializeField] private Vector3 offset;
         [SerializeField] private float maxForce = 30f;
+        [SerializeField] private float velocityFactor = 2.5f;
         #endregion
 
         #region PrivateVariables
@@ -77,7 +78,7 @@ namespace Slingshot
                 {
                     normalizedDir = Vector3.forward; // 给个默认前方
                 }
-                _launchVelocity = normalizedDir * _launchForce;
+                _launchVelocity = normalizedDir * (_launchForce * velocityFactor);
                 _trajectoryPredictor.UpdatePreview(_firePoint.position + offset, _launchVelocity);
                 _trajectoryRenderer.SetForceRatio(_launchForce / maxForce);
             }

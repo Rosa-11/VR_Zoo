@@ -32,7 +32,7 @@ namespace Core.Trajectory
 
         [Tooltip("球形碰撞检测半径，模拟渡渡鸟的体积（防止轨迹线穿地）。")]
         [Min(0f)]
-        [SerializeField] private float colliderRadius  = 0.15f;
+        [SerializeField] private float colliderRadius  = 0.5f;
 
         [Header("渲染组件")]
         [SerializeField] private TrajectoryRenderer trajectoryRenderer;

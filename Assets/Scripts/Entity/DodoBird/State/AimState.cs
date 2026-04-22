@@ -27,6 +27,7 @@ namespace Entity.DodoBird.State
         public override void OnExit()
         {
             base.OnExit();
+            owner.IsBeReleased = false;
             owner.GrabInteractable.enabled = false;
             GameManager.Event.Broadcast("DodoBird.OnRelease", new EventParameter<DodoBird>(owner));
         }
