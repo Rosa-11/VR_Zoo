@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7644563602503278044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3039281851171970116}
+  - component: {fileID: 8844573248469640820}
+  m_Layer: 0
+  m_Name: DialogueController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3039281851171970116
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7644563602503278044}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 622.42865, y: 209.02153, z: -0.5775078}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8844573248469640820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7644563602503278044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f053acfab1a25974790df2b7c52029c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueSequence:
+  - isPlayerSpeaking: 0
+    speakerName: "\u8BFA\u4E9A"
+    dialogueText: "\u6B22\u8FCE\uFF0C\u63A2\u9669\u5BB6\uFF01\u770B\uFF0C\u5C0F\u7FFC\u9F99\u5BC4\u6765\u4E86\u6D3E\u5BF9\u9080\u8BF7\u51FD\u3002"
+    displayDuration: 3
+  - isPlayerSpeaking: 1
+    speakerName: "\u4F60"
+    dialogueText: "\u592A\u68D2\u4E86\uFF01\u6211\u4EEC\u5FEB\u51FA\u53D1\u5427\uFF01"
+    displayDuration: 3
+  - isPlayerSpeaking: 0
+    speakerName: "\u8BFA\u4E9A"
+    dialogueText: "\u4F46\u5B83\u5199\u5F97\u6709\u70B9\u6F66\u8349\uFF0C\u6211\u4EEC\u4E0D\u77E5\u9053\u5177\u4F53\u8BE5\u5728\u54EA\u4E00\u7AD9\u4E0B\u8F66\u3002"
+    displayDuration: 3
+  - isPlayerSpeaking: 1
+    speakerName: "\u4F60"
+    dialogueText: "\u90A3\u6211\u4EEC\u5C31\u6BCF\u7AD9\u90FD\u4E0B\u53BB\u770B\u770B\uFF0C\u8BF4\u4E0D\u5B9A\u80FD\u9047\u89C1\u66F4\u591A\u670B\u53CB\u3002\t"
+    displayDuration: 3
+  - isPlayerSpeaking: 0
+    speakerName: "\u8BFA\u4E9A"
+    dialogueText: "\u597D\u4E3B\u610F\uFF01\u5217\u8F66\u5C31\u8981\u51FA\u53D1\u4E86\uFF0C\u6211\u4EEC\u8FD9\u5C31\u542F\u7A0B\uFF01"
+    displayDuration: 3
+  playerPortrait: {fileID: 1790566360, guid: 3a16ba1669b271645b5cac2fff57d6af, type: 3}
+  npcPortrait: {fileID: -388127676, guid: 549e03a1ae9a4874bb2a2fdbe1570595, type: 3}
+  targetSceneName: Scene1
+  delayBeforeSceneChange: 2
+  initialDelay: 1
+  delayBetweenDialogues: 1
+  minimumDisplayTime: 2
+  timePerCharacter: 0.05
+  showDebugLogs: 0
