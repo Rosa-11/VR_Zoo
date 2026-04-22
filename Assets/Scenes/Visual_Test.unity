@@ -210,10 +210,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 83381415}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 92307bb7c57e8154f9f7f7aa46ca6586,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 83381414}
     - targetCorrespondingSourceObject: {fileID: 1173977720705392313, guid: 92307bb7c57e8154f9f7f7aa46ca6586,
         type: 3}
       insertIndex: -1
@@ -237,31 +233,6 @@ SkinnedMeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 83381410}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &83381414
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 83381411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99f564deda283744b8c205590cc79983, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceRenderer: {fileID: 0}
-  materialIndex: 0
-  texturePropertyName: _BaseMap
-  gridX: 3
-  gridY: 3
-  animator: {fileID: 83381417}
-  expressionMappings: []
-  idleStateName: Idle
-  defaultIdleExpression: 0
-  randomIdleExpression: 1
-  randomMinInterval: 2
-  randomMaxInterval: 5
-  randomDuration: 0.15
 --- !u!114 &83381415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,7 +407,7 @@ Animator:
   m_GameObject: {fileID: 83381411}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d362dc7e399496742910ac0d12206c1b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 874167c9e6fdd4942964d4e4d8d84a23, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
