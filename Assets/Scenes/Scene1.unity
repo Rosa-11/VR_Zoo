@@ -2373,7 +2373,7 @@ PrefabInstance:
     - target: {fileID: 2311623757411137490, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.3
+      value: 4.588
       objectReference: {fileID: 0}
     - target: {fileID: 2311623757411137490, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
@@ -2423,12 +2423,12 @@ PrefabInstance:
     - target: {fileID: 7472787315278423315, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
       propertyPath: screenFade
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8543838307638558925, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
       propertyPath: smooth
-      value: 10
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8543838307638558925, guid: e9b56588b5bce02438275de01097f0b3,
         type: 3}
@@ -2438,21 +2438,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1493562960732688868, guid: e9b56588b5bce02438275de01097f0b3,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1076965758}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9b56588b5bce02438275de01097f0b3, type: 3}
 --- !u!20 &696431991 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 1493562960732688866, guid: e9b56588b5bce02438275de01097f0b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 696431990}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &696431992 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1493562960732688868, guid: e9b56588b5bce02438275de01097f0b3,
     type: 3}
   m_PrefabInstance: {fileID: 696431990}
   m_PrefabAsset: {fileID: 0}
@@ -3215,20 +3205,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 696431990}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1076965758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 696431992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ee8dd1042c84fa4fa2411e8c4ebcc01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gradientTime: 5
-  fadeColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1001 &1091429663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4653,7 +4629,7 @@ PrefabInstance:
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
