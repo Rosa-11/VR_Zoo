@@ -72,6 +72,7 @@ namespace Slingshot
         private LineRenderer _rope;
         private LineRenderer _ropeLeft;
         private LineRenderer _ropeRight;
+        public Vector3 offset;
  
         // ─── 生命周期 ────────────────────────────────────────────────────────
  
@@ -154,7 +155,7 @@ namespace Slingshot
             
             if (projectile)
             {
-                Vector3 center = projectile.position + SlingshotController.Offset;
+                Vector3 center = projectile.position + offset;
                 Vector3 pullVec = center - anchorMid;
                 Vector3 L2R = anchorRight.position - anchorLeft.position;
                 if (pullVec.sqrMagnitude > 0.0001f)
