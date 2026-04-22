@@ -13,20 +13,30 @@ namespace Entity.DodoBird.State
         public override void OnEnter()
         {
             base.OnEnter();
-            // owner.NavAgent.SetDestination(owner.MoveToPos);
+            // 开启寻路，移动至指定位置
+            owner.NavAgent.enabled = true;
+            owner.NavAgent.ResetPath();
+            owner.NavAgent.SetDestination(owner.MoveToPos.position);
         }
 
         public override void OnUpdate()
         {
             base.OnUpdate();
-            
-            // if (_hasReachedDestination())
-            //     stateMachine.ChangeState(DodoBirdStateType.Idle);
+
+            if (_hasReachedDestination())
+            {
+                if (owner.IsFirstInQueue)
+                    stateMachine.ChangeState(DodoBirdStateType.Wait);
+                else
+                    stateMachine.ChangeState(DodoBirdStateType.Idle);
+            }
         }
 
         public override void OnExit()
         {
             base.OnExit();
+            owner.NavAgent.enabled = false;
+            owner.IsFirstInQueue = false;
         }
 
         private bool _hasReachedDestination()

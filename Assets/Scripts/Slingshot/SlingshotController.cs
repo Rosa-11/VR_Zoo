@@ -16,44 +16,40 @@ namespace Slingshot
     /// </summary>
     public class SlingshotController : MonoBehaviour
     {
-        #region Componets
+        #region PrivateComponets
         
         private TrajectoryPredictor _trajectoryPredictor;
         private TrajectoryRenderer _trajectoryRenderer;
         private SlingshotRopeRenderer _ropeRenderer;
-        private SlingshotSnapZone _slingshotSnapZone;
+        
+        #endregion
+
+        #region SerializedFields
         
         [Header("Birds' Parent Transform")]
         [SerializeField] private Transform birdParent;
-        
         [Header("槽位（按从前到后顺序排列）")]
         [Tooltip("场景中的站位 Transform，index 0 = 最靠近弹弓的位置。")]
         [SerializeField] private List<Transform> slots = new();
         // // 临时拖进去
         // [SerializeField] private List<DodoBird> birds = new();
-        /// <summary>当前排队中的鸟，按槽位顺序排列（index 0 = 队首）。</summary>
-        private readonly List<DodoBird> _queue = new();
-        // 队尾坐标
-        public static Vector3 TailSlotPosition;
-        [SerializeField] private Quaternion initialRotation = Quaternion.Euler(0, 90, 0);
-        public static Quaternion InitialRotation { get; private set; }
-        
-        // 初始点
+        [Header("初始点")]
         [SerializeField] private Transform startPoint;
         [Tooltip("发射物Transform的偏差")] 
         [SerializeField] private Vector3 offset;
-        public static Vector3 Offset { get; private set; }
+        [SerializeField] private float maxForce = 30f;
+        [SerializeField] private float velocityFactor = 2.5f;
+        #endregion
+
+        #region PrivateVariables
+
+        /// <summary>当前排队中的鸟，按槽位顺序排列（index 0 = 队首）。</summary>
+        private readonly List<DodoBird> _queue = new();
         // 发射点，实际上就是鸟
         private Transform _firePoint;
-        public static Vector3 LaunchVelocity { get; private set; }
+        private Vector3 _launchVelocity;
         private Vector3 _launchDirection;
         private float _launchForce;
-        [SerializeField] private float maxForce = 30f;
-        [SerializeField] private float minAniDelay = 5f;
-        public static float MinAniDelay { get; private set; }
-        [SerializeField] private float maxAniDelay = 10f;
-        public static float MaxAniDelay { get; private set; }
-
         private bool _isPulling;
 
         #endregion
@@ -65,17 +61,10 @@ namespace Slingshot
             _trajectoryPredictor = GetComponentInChildren<TrajectoryPredictor>();
             _trajectoryRenderer = GetComponentInChildren<TrajectoryRenderer>();
             _ropeRenderer = GetComponentInChildren<SlingshotRopeRenderer>();
-            _slingshotSnapZone = GetComponentInChildren<SlingshotSnapZone>();
-            _slingshotSnapZone.SnapPoint = startPoint;
+            _ropeRenderer.offset = offset;
             
             // Debug.Log("tail slot position " + TailSlotPosition);
-            MinAniDelay = minAniDelay;
-            MaxAniDelay = maxAniDelay;
-            InitialRotation = initialRotation;
-            Offset = offset;
-            
             await InitDodoBird();
-            TailSlotPosition = slots[Mathf.Clamp(_queue.Count, 0, slots.Count - 1)].position;
         }
 
         private void Update()
@@ -89,8 +78,8 @@ namespace Slingshot
                 {
                     normalizedDir = Vector3.forward; // 给个默认前方
                 }
-                LaunchVelocity = normalizedDir * _launchForce;
-                _trajectoryPredictor.UpdatePreview(_firePoint.position + offset, LaunchVelocity);
+                _launchVelocity = normalizedDir * (_launchForce * velocityFactor);
+                _trajectoryPredictor.UpdatePreview(_firePoint.position + offset, _launchVelocity);
                 _trajectoryRenderer.SetForceRatio(_launchForce / maxForce);
             }
         }
@@ -100,8 +89,7 @@ namespace Slingshot
             // 注册事件
             GameManager.Event.Register("DodoBird.OnPulling", new Event<DodoBird>(OnPulling));
             GameManager.Event.Register("DodoBird.OnRelease", new Event<DodoBird>(OnRelease));
-            GameManager.Event.Register("DodoBird.Enqueue", new Event<DodoBird>(EnqueueReturningBird));
-            // GameManager.Event.Register("DodoBird.HitFruit", new Event<SlingshotFruitType>(OnFruitHit));
+            GameManager.Event.Register("DodoBird.OnEnqueue", new Event<DodoBird>(OnEnqueue));
         }
 
         private void OnDisable()
@@ -109,23 +97,12 @@ namespace Slingshot
             // 注销事件
             GameManager.Event.Unregister("DodoBird.OnPulling");
             GameManager.Event.Unregister("DodoBird.OnRelease");
-            GameManager.Event.Unregister("DodoBird.Enqueue");
-            // GameManager.Event.Unregister("DodoBird.HitFruit");
+            GameManager.Event.Unregister("DodoBird.OnEnqueue");
         }
         
         #endregion
         
         #region EventMethods
-
-        private void OnFruitHit(SlingshotFruitType type)
-        {
-            int score = type switch
-            {
-                SlingshotFruitType.Normal => 10,
-                _ => 0,
-            };
-            UIManager.Instance.AddScore(score);
-        }
 
         private void OnPulling(DodoBird dodoBird)
         {
@@ -140,30 +117,28 @@ namespace Slingshot
         private void OnRelease(DodoBird dodoBird)
         {
             // 释放并发射该渡渡鸟
+            dodoBird.LaunchVelocity = _launchVelocity;
+            dodoBird.MoveToPos = slots[^1];
             _isPulling = false;
             _trajectoryPredictor.HidePreview();
             _ropeRenderer.ResetInstant();
             CallNextBird();
-            // Debug.Log("Release!");
         }
  
         /// <summary>
         /// 将归队的鸟加入队尾，分配最后一个空槽位。
         /// 由 ReturningState 到达目标后调用。
         /// </summary>
-        private void EnqueueReturningBird(DodoBird bird)
+        private void OnEnqueue(DodoBird bird)
         {
             int tailSlotIndex = _queue.Count; // 当前队列长度即下一个可用槽位 index
- 
             if (tailSlotIndex >= slots.Count)
             {
                 Debug.LogWarning($"[BirdQueueManager] 槽位已满，无法将 {bird.name} 加入队列。");
                 return;
             }
- 
             _queue.Add(bird);
             AssignSlot(bird, tailSlotIndex);
-            // Debug.Log("enqueue slot " + tailSlotIndex);
         }
         
         #endregion
@@ -171,39 +146,22 @@ namespace Slingshot
         #region ToolMethods
         
         /// <summary>
-        /// 通知队列：队首鸟已离队（进入 Waiting），驱动剩余鸟前移。
-        /// 由外部（EventManager 或弹弓系统）在确认当前鸟上膛后调用。
+        /// 命令鸟更新位置
         /// </summary>
-        private void OnFrontBirdDequeued()
+        private async void CallNextBird()
         {
             if (_queue.Count == 0) return;
- 
             _queue.RemoveAt(0);
-            ShiftQueueForward();
-        }
-        
-        /// <summary>
-        /// 叫出队首鸟，使其进入 Waiting 状态。
-        /// 通常在上一只鸟发射后由游戏流程调用。
-        /// </summary>
-        private void CallNextBird()
-        {
-            if (_queue.Count == 0)
+            for (int i = 0; i < _queue.Count; i++)
             {
-                Debug.Log("[BirdQueueManager] 队列为空，本轮结束。");
-                // TODO: EventManager 通知关卡管理器所有鸟已发射
-                return;
+                AssignSlot(_queue[i], i);
+                _queue[i].IsCalledToNext = true;
+                await UniTask.WaitForSeconds(1f);
             }
-
-            OnFrontBirdDequeued();
-            // await UniTask.Yield(); // 等一帧，让 NavMeshAgent 完成路径规划
-            // var frontBird = _queue[0];
-            // frontBird.OnTurnArrived();
         }
         
         /// <summary>
         /// 初始化所有的渡渡鸟
-        /// TODO：用prefab逐个实例化加载
         /// </summary>
         private async UniTask InitDodoBird()
         {
@@ -211,39 +169,23 @@ namespace Slingshot
             for (int i = 0; i < slots.Count; i++)
             {
                 GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
-                DodoBird bird = Instantiate(birdGameObject, slots[i].position, InitialRotation, birdParent)
+                DodoBird bird = Instantiate(birdGameObject, slots[i].position, slots[i].rotation, birdParent)
                     .GetComponent<DodoBird>();
+                bird.LoadedPos = startPoint;
                 _queue.Add(bird);
+                await UniTask.Yield();
                 AssignSlot(bird, i);
-
-                bird.SnapZone = _slingshotSnapZone;
-                bird.SnapPoint = startPoint.position;
             }
             await UniTask.Yield();
-            // 初始化第一只为准备好的状态
-            // var frontBird = _queue[0];
-            // frontBird.OnTurnArrived();
-        }
-        
-        /// <summary>
-        /// 队首离队后，将队列中所有鸟向前移动一个槽位。
-        /// </summary>
-        private async void ShiftQueueForward()
-        {
-            for (int i = 0; i < _queue.Count; i++)
-            {
-                AssignSlot(_queue[i], i);
-                await UniTask.WaitForSeconds(1f);
-            }
         }
  
         /// <summary>
-        /// 为指定鸟分配槽位：更新 QueuePosition 并通知其前往新位置。
+        /// 更新鸟的MoveToPos并更新IsFirstInQueue
         /// </summary>
         private void AssignSlot(DodoBird bird, int slotIndex)
         {
-            Vector3 slotPos = slots[slotIndex].position;
-            bird.UpdateQueuePosition(slotPos, slotIndex);
+            bird.MoveToPos = slots[slotIndex];
+            bird.IsFirstInQueue = slotIndex == 0;
         }
         
 #if UNITY_EDITOR

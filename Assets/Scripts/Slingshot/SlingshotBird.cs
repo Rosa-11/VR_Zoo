@@ -1,6 +1,6 @@
 using Core.Event;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
+// using Cysharp.Threading.Tasks;
+// using DG.Tweening;
 using UnityEngine;
 using Manager;
 
@@ -25,20 +25,20 @@ namespace Slingshot
         [Header("UI 组件")]
         [SerializeField] private SlingshotBirdUI ui;
 
-        [Header("连击配置")]
-        [Tooltip("多少秒内无命中则重置连击计数。")]
-        [SerializeField] private float comboResetDelay = 3f;
-
-        [Tooltip("触发完美摘取连击奖励所需的最低连击数。")]
-        [SerializeField] private int   comboThreshold  = 3;
-
-        [Tooltip("完美摘取连击奖励分值。")]
-        [SerializeField] private int   comboBonus      = 100;
+        // [Header("连击配置")]
+        // [Tooltip("多少秒内无命中则重置连击计数。")]
+        // [SerializeField] private float comboResetDelay = 3f;
+        //
+        // [Tooltip("触发完美摘取连击奖励所需的最低连击数。")]
+        // [SerializeField] private int   comboThreshold  = 3;
+        //
+        // [Tooltip("完美摘取连击奖励分值。")]
+        // [SerializeField] private int   comboBonus      = 100;
 
         // ─── 私有状态 ────────────────────────────────────────────────────────
 
         private int   _totalScore;
-        private int   _comboCount;
+        // private int   _comboCount;
 
         // 用于取消连击重置的 UniTask token
         private System.Threading.CancellationTokenSource _comboCts;
@@ -55,7 +55,7 @@ namespace Slingshot
             GameManager.Event.Register("DodoBird.HitFruit", new Event<SlingshotFruitType>(OnFruitHit));
 
             _totalScore = 0;
-            _comboCount = 0;
+            // _comboCount = 0;
             ui.ShowScore(0);
         }
 
@@ -72,7 +72,7 @@ namespace Slingshot
         /// 命中果实事件回调。
         /// 参数 fruitType 由广播方传入，连锁命中时 score 由广播方折半后传入。
         /// </summary>
-        public void OnFruitHit(SlingshotFruitType fruitType)
+        private void OnFruitHit(SlingshotFruitType fruitType)
         {
             int delta = fruitType.GetScore();
             AddScore(delta, fruitType == SlingshotFruitType.GoldenFruit);
@@ -97,7 +97,7 @@ namespace Slingshot
             // RestartComboResetTimer().Forget();
 
             // 连击达标：触发额外奖励
-            bool isCombo = false;
+            // bool isCombo = false;
             // if (_comboCount >= comboThreshold)
             // {
             //     _totalScore += comboBonus;
@@ -108,7 +108,7 @@ namespace Slingshot
 
             // 驱动 UI
             ui.ShowScore(_totalScore, isGolden);
-            ui.ShowDelta(delta, isGolden, isCombo);
+            ui.ShowDelta(delta, isGolden/*, isCombo*/);
 
             // if (isCombo)
             //     ShowComboEffectAsync().Forget();
@@ -116,35 +116,35 @@ namespace Slingshot
 
         // ─── UniTask：连击重置计时 ───────────────────────────────────────────
 
-        /// <summary>
-        /// 重启连击重置计时器。
-        /// 每次命中时取消上一个计时，重新等待 comboResetDelay 秒后归零连击数。
-        /// </summary>
-        private async UniTaskVoid RestartComboResetTimer()
-        {
-            CancelComboReset();
-            _comboCts = new System.Threading.CancellationTokenSource();
+        // /// <summary>
+        // /// 重启连击重置计时器。
+        // /// 每次命中时取消上一个计时，重新等待 comboResetDelay 秒后归零连击数。
+        // /// </summary>
+        // private async UniTaskVoid RestartComboResetTimer()
+        // {
+        //     CancelComboReset();
+        //     _comboCts = new System.Threading.CancellationTokenSource();
+        //
+        //     try
+        //     {
+        //         await UniTask.Delay(
+        //             System.TimeSpan.FromSeconds(comboResetDelay),
+        //             cancellationToken: _comboCts.Token);
+        //
+        //         // _comboCount = 0;
+        //     }
+        //     catch (System.OperationCanceledException)
+        //     {
+        //         // 被新一次命中取消，属于正常流程，忽略
+        //     }
+        // }
 
-            try
-            {
-                await UniTask.Delay(
-                    System.TimeSpan.FromSeconds(comboResetDelay),
-                    cancellationToken: _comboCts.Token);
-
-                _comboCount = 0;
-            }
-            catch (System.OperationCanceledException)
-            {
-                // 被新一次命中取消，属于正常流程，忽略
-            }
-        }
-
-        private void CancelComboReset()
-        {
-            _comboCts?.Cancel();
-            _comboCts?.Dispose();
-            _comboCts = null;
-        }
+        // private void CancelComboReset()
+        // {
+        //     _comboCts?.Cancel();
+        //     _comboCts?.Dispose();
+        //     _comboCts = null;
+        // }
 
         // // ─── UniTask + DOTween：连击特效 ─────────────────────────────────────
         //

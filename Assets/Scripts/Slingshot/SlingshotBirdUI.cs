@@ -34,19 +34,19 @@ namespace Slingshot
         [Tooltip("弹性放大持续时长（秒）。")]
         [SerializeField] private float scorePunchDuration = 3.5f;
 
-        [Header("浮动加分动画")]
-        [Tooltip("加分标签向上漂移的距离（世界单位）。")]
-        [SerializeField] private float deltaFloatHeight  = 0.25f;
-        [Tooltip("加分标签的总生命周期（秒）。")]
-        [SerializeField] private float deltaLifetime     = 2.5f;
-        [Tooltip("开始淡出的时间点（占 deltaLifetime 的比例）。")]
-        [Range(0f, 1f)]
-        [SerializeField] private float deltaFadeStart    = 0.5f;
+        // [Header("浮动加分动画")]
+        // [Tooltip("加分标签向上漂移的距离（世界单位）。")]
+        // [SerializeField] private float deltaFloatHeight  = 0.25f;
+        // [Tooltip("加分标签的总生命周期（秒）。")]
+        // [SerializeField] private float deltaLifetime     = 2.5f;
+        // [Tooltip("开始淡出的时间点（占 deltaLifetime 的比例）。")]
+        // [Range(0f, 1f)]
+        // [SerializeField] private float deltaFadeStart    = 0.5f;
 
         [Header("颜色主题")]
         [SerializeField] private Color colorNormal  = Color.white;
         [SerializeField] private Color colorGolden  = new Color(1f, 0.85f, 0.1f); // 金果专用
-        [SerializeField] private Color colorCombo   = new Color(0.3f, 1f,   0.5f); // 连击
+        // [SerializeField] private Color colorCombo   = new Color(0.3f, 1f,   0.5f); // 连击
 
         // ─── 私有状态 ────────────────────────────────────────────────────────
 
@@ -147,20 +147,20 @@ namespace Slingshot
             //     .SetLink(gameObject);
         }
 
-        /// <summary>
-        /// 设置摄像机引用（场景切换或 VR Rig 重建时调用）。
-        /// </summary>
-        public void SetCamera(Transform cam) => vrCamera = cam;
+        // /// <summary>
+        // /// 设置摄像机引用（场景切换或 VR Rig 重建时调用）。
+        // /// </summary>
+        // public void SetCamera(Transform cam) => vrCamera = cam;
 
         // ─── 私有工具 ────────────────────────────────────────────────────────
 
-        private void SetDeltaAlpha(float alpha)
-        {
-            var c = scoreDeltaLabel.color;
-            c.a = alpha;
-            scoreDeltaLabel.color = alpha < 0.01f
-                ? new Color(c.r, c.g, c.b, 0f)
-                : new Color(c.r, c.g, c.b, alpha);
-        }
+        // private void SetDeltaAlpha(float alpha)
+        // {
+        //     var c = scoreDeltaLabel.color;
+        //     c.a = alpha;
+        //     scoreDeltaLabel.color = alpha < 0.01f
+        //         ? new Color(c.r, c.g, c.b, 0f)
+        //         : new Color(c.r, c.g, c.b, alpha);
+        // }
     }
 }
