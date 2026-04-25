@@ -38,9 +38,9 @@ Material:
     - _ShadowStep: 0.38
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EnvDownColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EnvDownColor: {r: 0.24548073, g: 0.5024159, b: 0.72955966, a: 1}
     - _EnvSideColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
     - _EnvUpColor: {r: 0.7987421, g: 0.91498137, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowColor: {r: 0.8018868, g: 0.66681707, b: 0.42111662, a: 1}
+    - _ShadowColor: {r: 0.8, g: 0.73270106, b: 0.60800004, a: 1}
   m_BuildTextureStacks: []
