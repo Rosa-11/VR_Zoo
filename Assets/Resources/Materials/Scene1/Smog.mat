@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _RECEIVE_SHADOW
+  - _USE_VERTEX_COLOR
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -36,12 +37,12 @@ Material:
     - _ReceiveShadow: 1
     - _ShadowFeather: 0.01
     - _ShadowStep: 0.5
-    - _UseVertexColor: 0
+    - _UseVertexColor: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.94534135, b: 0.84339625, a: 1}
     - _EnvDownColor: {r: 0.09999997, g: 0.09999997, b: 0.19999996, a: 1}
     - _EnvSideColor: {r: 0.39999998, g: 0.39999998, b: 0.5, a: 1}
     - _EnvUpColor: {r: 0.7, g: 0.7, b: 1, a: 1}
-    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _OutlineColor: {r: 0.57924527, g: 0.8026728, b: 1, a: 1}
+    - _ShadowColor: {r: 0.6398545, g: 0.55949444, b: 0.6754716, a: 1}
   m_BuildTextureStacks: []
