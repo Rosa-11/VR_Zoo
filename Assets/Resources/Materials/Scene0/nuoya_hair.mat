@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: nuoya_body
+  m_Name: nuoya_hair
   m_Shader: {fileID: 4800000, guid: 76db028848d656a489ef20983d9acbbd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -25,7 +25,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 41936b0980e7c304e8e35ec3ee63a0a6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5cf3b0294227d73409693ecf1bac859e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 41936b0980e7c304e8e35ec3ee63a0a6, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatcapTex:
@@ -107,7 +107,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineWidth: 0.005
+    - _OutlineWidth: 0.0052
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadow: 1
@@ -125,14 +125,14 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5283019, g: 0.36419132, b: 0.1644713, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MatcapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0.44025147, g: 0.1481349, b: 0.1481349, a: 1}
+    - _OutlineColor: {r: 0.25157225, g: 0.12359799, b: 0.0023732837, a: 1}
     - _ShadowColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &646493612335486364
+--- !u!114 &8685020941889663569
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

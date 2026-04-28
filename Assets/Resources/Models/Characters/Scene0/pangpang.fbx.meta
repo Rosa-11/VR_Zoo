@@ -3,7 +3,17 @@ guid: 2dd91d6ea5214bb4db0c2958485db6f8
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pangpang_body
+    second: {fileID: 2100000, guid: e625c9e5b06fd5948afbb29db363960a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pangpang_eyes
+    second: {fileID: 2100000, guid: fe4eda5828bc86749badf9285120b38c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -16,6 +26,8 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

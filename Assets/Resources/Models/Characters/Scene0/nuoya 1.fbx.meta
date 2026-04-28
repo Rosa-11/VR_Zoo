@@ -3,7 +3,27 @@ guid: 5b35283255b6a3241a629648ee795215
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: clothes
+    second: {fileID: 2100000, guid: 321d2c5c4f451cf4fa1ec5e973d8d10d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28"
+    second: {fileID: 2100000, guid: 2850b431a536aa0499263117980ea0e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.001"
+    second: {fileID: 2100000, guid: cfa3fbc77e479aa418e6db5d7817bae2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u6750\u8D28.005"
+    second: {fileID: 2100000, guid: 3f689d2781259654cb1edd037a0b09d8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -16,6 +36,8 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
