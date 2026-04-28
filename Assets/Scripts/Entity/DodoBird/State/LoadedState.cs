@@ -13,6 +13,7 @@ namespace Entity.DodoBird.State
         {
             base.OnEnter();
             owner.IsBeGrabbed = false;
+            owner.PlayParticle(DodoBirdParticleType.Cry);
         }
 
         public override void OnUpdate()

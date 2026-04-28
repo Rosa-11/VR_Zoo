@@ -17,7 +17,7 @@ namespace Entity.DodoBird
     /// 各状态的具体逻辑封装在 States/ 目录下，DodoBird 本身不包含游戏逻辑。
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(Collider))]
+    // [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(XRGrabInteractable))]
@@ -58,6 +58,10 @@ namespace Entity.DodoBird
         [SerializeField] private float disToTele = 3f;
         [Header("前置点Offset")]
         [SerializeField] private float offsetDistance = 2f;
+        [Header("粒子效果")] 
+        [SerializeField] private ParticleSystem shockPS;
+        [SerializeField] private ParticleSystem smogPS;
+        [SerializeField] private ParticleSystem cryPS;
 
         #endregion
 
@@ -102,7 +106,8 @@ namespace Entity.DodoBird
         private void Update()       => _fsm.OnUpdate();
         
         #endregion
-        
+
+        #region PrivateMethods
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.layer == _landLayer)
@@ -135,5 +140,29 @@ namespace Entity.DodoBird
             // _fsm.OnStateChanged += (from, to) =>
             //     Debug.Log($"[DodoBird:{name}] {from} → {to}");
         }
+        #endregion
+
+        #region PublicMethods
+
+        public void PlayParticle(DodoBirdParticleType type)
+        {
+            ParticleSystem ps = type switch
+            {
+                DodoBirdParticleType.Shock => shockPS,
+                DodoBirdParticleType.Smog  => smogPS,
+                DodoBirdParticleType.Cry  => cryPS,
+                _ => null
+            };
+            ps?.Play();
+        }
+
+        #endregion
+    }
+
+    public enum DodoBirdParticleType
+    {
+        Shock,
+        Smog,
+        Cry,
     }
 }
