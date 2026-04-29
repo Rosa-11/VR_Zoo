@@ -43,6 +43,7 @@ namespace Entity.DodoBird.State
             Vector3 approachPoint = owner.MoveToPos.position - owner.MoveToPos.forward * owner.OffsetDistance;
             owner.NavAgent.autoBraking = false;
             owner.NavAgent.ResetPath();
+            owner.PlayParticle(DodoBirdParticleType.Cry);
             await UniTask.Yield();
             owner.NavAgent.SetDestination(approachPoint);
             await UniTask.Yield();
@@ -52,6 +53,7 @@ namespace Entity.DodoBird.State
             
             owner.NavAgent.autoBraking = true;
             owner.NavAgent.ResetPath();
+            owner.PlayParticle(DodoBirdParticleType.Cry);
             await UniTask.Yield();
             owner.NavAgent.SetDestination(owner.MoveToPos.position);
             await UniTask.Yield();

@@ -9,6 +9,12 @@ namespace Entity.DodoBird.State
             : base(owner, stateMachine, animBoolName)
         { }
 
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            owner.PlayParticle(DodoBirdParticleType.Shock);
+        }
+
         public override void OnUpdate()
         {
             base.OnUpdate();
@@ -22,6 +28,7 @@ namespace Entity.DodoBird.State
                 else// if (_isToMoveToPos())
                 {
                     owner.transform.position = owner.MoveToPos.position;
+                    owner.transform.rotation = owner.MoveToPos.rotation;
                     stateMachine.ChangeState(DodoBirdStateType.Wait);
                 }
                 // TODO：可能还有bug，先不开

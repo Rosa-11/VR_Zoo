@@ -1,3 +1,4 @@
+using Core.Utils;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Slingshot
     ///
     /// 由 ChiefBird 驱动，调用 ShowScore() / ShowDelta() 即可。
     /// </summary>
-    public class SlingshotBirdUI : MonoBehaviour
+    public class SlingshotBirdUI : AlwaysFacingCam
     {
         // ─── 序列化字段 ──────────────────────────────────────────────────────
 
@@ -23,10 +24,10 @@ namespace Slingshot
         [SerializeField] private TMP_Text scoreLabel;
         [SerializeField] private TMP_Text scoreDeltaLabel;
 
-        [Header("Billboard（始终朝向 VR 摄像机）")]
-        [Tooltip("留空则运行时自动绑定 Camera.main。\n" +
-                 "PICO 项目建议手动指定 CenterEyeAnchor。")]
-        [SerializeField] private Transform vrCamera;
+        // [Header("Billboard（始终朝向 VR 摄像机）")]
+        // [Tooltip("留空则运行时自动绑定 Camera.main。\n" +
+        //          "PICO 项目建议手动指定 CenterEyeAnchor。")]
+        // [SerializeField] private Transform vrCamera;
 
         [Header("分数动画")]
         [Tooltip("得分时主分数的弹性放大倍率。")]
@@ -58,27 +59,28 @@ namespace Slingshot
 
         // ─── 生命周期 ────────────────────────────────────────────────────────
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
             _scoreLabelOriginScale = Vector3.one;
 
             // 隐藏浮动标签初始状态
             // SetDeltaAlpha(0f);
-
-            if (vrCamera == null && Camera.main != null)
-                vrCamera = Camera.main.transform;
+            //
+            // if (vrCamera == null && Camera.main != null)
+            //     vrCamera = Camera.main.transform;
             
             _slingshotScore = GetComponentInChildren<SlingshotScore>();
         }
 
-        private void LateUpdate()
-        {
-            // Billboard：使 UI 面板始终朝向玩家摄像机
-            if (!vrCamera) return;
-            Vector3 lookDir = transform.position - vrCamera.position;
-            if (lookDir != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
-        }
+        // private void LateUpdate()
+        // {
+        //     // Billboard：使 UI 面板始终朝向玩家摄像机
+        //     if (!vrCamera) return;
+        //     Vector3 lookDir = transform.position - vrCamera.position;
+        //     if (lookDir != Vector3.zero)
+        //         transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
+        // }
 
         private void OnDestroy()
         {

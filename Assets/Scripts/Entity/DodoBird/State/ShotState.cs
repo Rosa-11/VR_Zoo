@@ -29,6 +29,7 @@ namespace Entity.DodoBird.State
             owner.IsLanded = false;
             owner.Rb.isKinematic = true;
             owner.Collider.enabled = false;
+            owner.PlayParticle(DodoBirdParticleType.Smog);
         }
     }
 }

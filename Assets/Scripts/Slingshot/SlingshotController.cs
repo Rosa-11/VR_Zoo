@@ -26,13 +26,13 @@ namespace Slingshot
 
         #region SerializedFields
         
-        [Header("Birds' Parent Transform")]
-        [SerializeField] private Transform birdParent;
+        // [Header("Birds' Parent Transform")]
+        // [SerializeField] private Transform birdParent;
         [Header("槽位（按从前到后顺序排列）")]
         [Tooltip("场景中的站位 Transform，index 0 = 最靠近弹弓的位置。")]
         [SerializeField] private List<Transform> slots = new();
-        // // 临时拖进去
-        // [SerializeField] private List<DodoBird> birds = new();
+        // 临时拖进去
+        [SerializeField] private List<DodoBird> birds = new();
         [Header("初始点")]
         [SerializeField] private Transform startPoint;
         [Tooltip("发射物Transform的偏差")] 
@@ -168,9 +168,10 @@ namespace Slingshot
             _queue.Clear();
             for (int i = 0; i < slots.Count; i++)
             {
-                GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
-                DodoBird bird = Instantiate(birdGameObject, slots[i].position, slots[i].rotation, birdParent)
-                    .GetComponent<DodoBird>();
+                // GameObject birdGameObject = await GameManager.AssetLoader.LoadPrefab("DodoBird_Lite");
+                // DodoBird bird = Instantiate(birdGameObject, slots[i].position, slots[i].rotation, birdParent)
+                //     .GetComponent<DodoBird>();
+                DodoBird bird = birds[i];
                 bird.LoadedPos = startPoint;
                 _queue.Add(bird);
                 await UniTask.Yield();

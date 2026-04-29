@@ -20,6 +20,7 @@ namespace Slingshot
         
         public void PlayAddScoreAni(int addedScore)
         {
+            if (mainPS.isPlaying) return;
             int[] digits = System.Math.Abs(addedScore).ToString().Select(c => c - '0').ToArray();
             int length = digits.Length;
             GameObject go = _getTargetGO(length);
