@@ -34,6 +34,7 @@ namespace Slingshot
                 // 广播消息被撞到了，只有在树上的有资格被撞
                 GameManager.Event.Broadcast("DodoBird.HitFruit", 
                     new EventParameter<SlingshotFruitType>(slingshotFruitType));
+                GetComponent<AudioSource>().Play();
                 return;
             }
 
@@ -42,6 +43,7 @@ namespace Slingshot
                 _rb.velocity = Vector3.zero;
                 _rb.angularVelocity = Vector3.zero;
                 _rb.isKinematic = true;
+                GetComponent<AudioSource>().Play();
             }
             // else if(collision.gameObject.CompareTag("Fruit"))
             // {

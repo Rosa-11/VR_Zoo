@@ -112,6 +112,7 @@ namespace Slingshot
             _trajectoryPredictor.ShowPreview();
             _ropeRenderer.SetProjectile(dodoBird.transform);
             _ropeRenderer.BeginPull();
+            GetComponent<AudioManager>().PlaySound("Pull");
         }
 
         private void OnRelease(DodoBird dodoBird)
@@ -123,8 +124,9 @@ namespace Slingshot
             _trajectoryPredictor.HidePreview();
             _ropeRenderer.ResetInstant();
             CallNextBird();
+            GetComponent<AudioManager>().PlaySound("Shoot");
         }
- 
+
         /// <summary>
         /// 将归队的鸟加入队尾，分配最后一个空槽位。
         /// 由 ReturningState 到达目标后调用。
