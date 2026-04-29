@@ -33,16 +33,16 @@ Material:
     m_Floats:
     - _EnvFalloff: 2
     - _EnvIntensity: 0.5
-    - _OutlineWidth: 0
+    - _OutlineWidth: 0.0101
     - _ReceiveShadow: 1
     - _ShadowFeather: 0
     - _ShadowStep: 0
     - _UseVertexColor: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.9752938, b: 0.80817604, a: 1}
     - _EnvDownColor: {r: 1, g: 1, b: 1, a: 1}
     - _EnvSideColor: {r: 1, g: 1, b: 1, a: 1}
     - _EnvUpColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OutlineColor: {r: 1, g: 0.9455783, b: 0.58805025, a: 1}
     - _ShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

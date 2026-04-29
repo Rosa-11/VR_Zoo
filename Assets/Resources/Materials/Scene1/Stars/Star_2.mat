@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Star_2
   m_Shader: {fileID: 4800000, guid: e7c1688f9fd52ae4aaee83693cd38d40, type: 3}
-  m_Parent: {fileID: 0}
+  m_Parent: {fileID: 2100000, guid: 58f48aaa0efcd4c4a902d7b9e4d55eb6, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _RECEIVE_SHADOW
@@ -24,25 +24,10 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Ints: []
-    m_Floats:
-    - _EnvFalloff: 2
-    - _EnvIntensity: 0.5
-    - _OutlineWidth: 0.016
-    - _ReceiveShadow: 1
-    - _ShadowFeather: 0
-    - _ShadowStep: 0
-    - _UseVertexColor: 1
+    m_Floats: []
     m_Colors:
     - _Color: {r: 0.96686447, g: 0.53144646, b: 1, a: 1}
-    - _EnvDownColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EnvSideColor: {r: 0.6509433, g: 0.6509433, b: 1, a: 1}
-    - _EnvUpColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 1, g: 1, b: 1, a: 1}
+    - _EnvSideColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
