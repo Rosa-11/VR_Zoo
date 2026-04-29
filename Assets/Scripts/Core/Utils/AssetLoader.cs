@@ -26,5 +26,13 @@ namespace Core.Utils
             loadSucceedCallback?.Invoke(_loadedPrefabs[prefabName]);
             return _loadedPrefabs[prefabName];
         }
+
+        public async UniTask<T> LoadAsset<T>(string assetName, Action<T> LoadSuccessCallBack = null)
+        {
+            AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(assetName);
+            await handle.ToUniTask();
+            LoadSuccessCallBack?.Invoke(handle.Result);
+            return handle.Result;
+        }
     }
 }

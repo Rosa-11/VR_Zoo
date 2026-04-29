@@ -16,6 +16,7 @@ namespace Entity.DodoBird
     ///
     /// 各状态的具体逻辑封装在 States/ 目录下，DodoBird 本身不包含游戏逻辑。
     /// </summary>
+    [RequireComponent(typeof(AudioSource))]
     [RequireComponent(typeof(Rigidbody))]
     // [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(NavMeshAgent))]
@@ -31,6 +32,7 @@ namespace Entity.DodoBird
         public Animator          Anim        { get; private set; }
         public XRGrabInteractable GrabInteractable { get; private set; }
         public Collider         Collider     { get; private set; }
+        public AudioSource       AS          { get; private set; }
         
         #endregion
         
@@ -123,6 +125,7 @@ namespace Entity.DodoBird
             Anim             = GetComponent<Animator>();
             GrabInteractable = GetComponent<XRGrabInteractable>();
             Collider         = GetComponent<Collider>();
+            AS               = GetComponent<AudioSource>();
         }
  
         private void BuildFsm()

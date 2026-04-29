@@ -1,4 +1,5 @@
 using Core.Fsm;
+using Manager;
 using UnityEngine.AI;
 
 namespace Entity.DodoBird.State
@@ -17,6 +18,7 @@ namespace Entity.DodoBird.State
             owner.NavAgent.enabled = true;
             owner.NavAgent.ResetPath();
             owner.NavAgent.SetDestination(owner.MoveToPos.position);
+            GameManager.mAudio.PlayEffect(owner.AS, "DodoBirdEffect", "Caw", loop:true);
         }
 
         public override void OnUpdate()
@@ -37,6 +39,7 @@ namespace Entity.DodoBird.State
             base.OnExit();
             owner.NavAgent.enabled = false;
             owner.IsFirstInQueue = false;
+            owner.AS.Stop();
         }
 
         private bool _hasReachedDestination()
