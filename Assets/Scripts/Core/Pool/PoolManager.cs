@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Utils;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;  // Unity 2021+ 官方对象池
 
@@ -135,7 +136,10 @@ namespace Core.Pool
         /// <summary>
         /// 从指定池中取出一个对象（激活状态）。
         /// </summary>
-        public PoolableObject Get(string key)
+        public PoolableObject Get(string key, 
+            Vector3? position = null, 
+            Quaternion? rotation = null, 
+            Transform parent = null)
         {
             if (!_pools.TryGetValue(key, out var pool))
             {
@@ -145,15 +149,22 @@ namespace Core.Pool
             }
             var obj = pool.Get();
             obj.PoolKey = key;
+            obj.transform.SetParent(parent ?? transform, false);
+            obj.transform.localPosition = position ?? Vector3.zero;
+            obj.transform.localRotation = rotation ?? Quaternion.identity;
             return obj;
         }
 
         /// <summary>
         /// 泛型版本，取出后直接转型，省去外部强转。
         /// </summary>
-        public T Get<T>(string key) where T : PoolableObject
+        public T Get<T>(string key, 
+            Vector3? position = null, 
+            Quaternion? rotation = null, 
+            Transform parent = null)
+            where T : PoolableObject
         {
-            var obj = Get(key);
+            var obj = Get(key, position, rotation, parent);
             if (obj == null) return null;
 
             if (obj is T typed) return typed;
@@ -192,7 +203,33 @@ namespace Core.Pool
                 Destroy(obj.gameObject);
                 return;
             }
+            
+            // obj.transform.SetParent(transform, false);
+            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localRotation = Quaternion.identity;
+            obj.transform.localScale = Vector3.one;
+            
             pool.Release(obj);
+        }
+        
+        /// <summary>
+        /// 延迟一段时间后，将对象归还至对应池
+        /// </summary>
+        public async void Return(PoolableObject obj, float? t)
+        {
+            if (obj == null) return;
+
+            if (string.IsNullOrEmpty(obj.PoolKey))
+            {
+                Debug.LogError($"[PoolManager] {obj.name} 的 PoolKey 为空，无法归还。" +
+                               "请确保对象通过 PoolManager.I.Get() 取出。");
+                return;
+            }
+            
+            if (t != null)
+                await UniTask.WaitForSeconds((float)t);
+            
+            Return(obj.PoolKey, obj);
         }
 
         /// <summary>清空指定池（销毁所有闲置对象，活跃对象不受影响）。</summary>
@@ -227,6 +264,7 @@ namespace Core.Pool
         {
             var cfg = _configs[key];
             var go  = Instantiate(cfg.prefab, _containers[key]);
+            Debug.Log("***");
 
             var poolable = go.GetComponent<PoolableObject>();
             if (poolable == null)
