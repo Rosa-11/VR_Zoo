@@ -1,11 +1,33 @@
 using System.Collections.Generic;
 using Core.Utils;
 using Cysharp.Threading.Tasks;
+using Manager;
 using UnityEngine;
 using UnityEngine.Pool;  // Unity 2021+ 官方对象池
 
 namespace Core.Pool
 {
+    #region 配置数据结构
+    [System.Serializable]
+    public class PoolConfig
+    {
+        [Tooltip("唯一标识符，对应 Get/Return 调用中的 key 参数。")]
+        public string key;
+
+        [Tooltip("要池化的预制体（须含有 PoolableObject 组件，否则运行时自动添加基类）。")]
+        public GameObject prefab;
+
+        [Tooltip("场景加载时预热的对象数量。")]
+        [Min(0)] public int initialSize = 10;
+
+        [Tooltip("启用后，当池耗尽时自动创建新实例，直至达到 maxSize。")]
+        public bool autoExpand = true;
+
+        [Tooltip("池内对象总数的上限，仅在 autoExpand 启用时生效。")]
+        [Min(1)] public int maxSize = 50;
+    }
+    #endregion
+    
     /// <summary>
     /// 通用对象池管理器。
     ///
@@ -24,31 +46,7 @@ namespace Core.Pool
     /// </summary>
     public class PoolManager : Singleton<PoolManager>
     {
-        #region 配置数据结构
-        [System.Serializable]
-        public class PoolConfig
-        {
-            [Tooltip("唯一标识符，对应 Get/Return 调用中的 key 参数。")]
-            public string key;
-
-            [Tooltip("要池化的预制体（须含有 PoolableObject 组件，否则运行时自动添加基类）。")]
-            public GameObject prefab;
-
-            [Tooltip("场景加载时预热的对象数量。")]
-            [Min(0)] public int initialSize = 10;
-
-            [Tooltip("启用后，当池耗尽时自动创建新实例，直至达到 maxSize。")]
-            public bool autoExpand = true;
-
-            [Tooltip("池内对象总数的上限，仅在 autoExpand 启用时生效。")]
-            [Min(1)] public int maxSize = 50;
-        }
-        #endregion
-
-        // ─── 序列化字段 ──────────────────────────────────────────────────────
-
-        [Header("在 Inspector 中预配置的对象池")]
-        [SerializeField] private List<PoolConfig> poolConfigs = new();
+        private List<PoolConfig> poolConfigs = new();
 
         #region PrivateField
 
@@ -60,11 +58,16 @@ namespace Core.Pool
         private readonly Dictionary<string, Transform>                  _containers = new();
 
         #endregion
-        
-        // ─── Singleton 入口 ──────────────────────────────────────────────────
 
-        protected override void OnAwake()
+        public void SetupPool(PoolConfigDataSO data)
         {
+            // 清除旧池子
+            foreach (var pool in _pools.Values)
+                pool.Dispose();
+            _pools.Clear();
+            
+            if (data != null)
+                poolConfigs = data.poolConfigs;
             foreach (var cfg in poolConfigs)
                 RegisterPool(cfg);
         }
@@ -207,7 +210,7 @@ namespace Core.Pool
             // obj.transform.SetParent(transform, false);
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
-            obj.transform.localScale = Vector3.one;
+            // obj.transform.localScale = Vector3.one;
             
             pool.Release(obj);
         }
@@ -264,7 +267,7 @@ namespace Core.Pool
         {
             var cfg = _configs[key];
             var go  = Instantiate(cfg.prefab, _containers[key]);
-            Debug.Log("***");
+            // Debug.Log("***");
 
             var poolable = go.GetComponent<PoolableObject>();
             if (poolable == null)
