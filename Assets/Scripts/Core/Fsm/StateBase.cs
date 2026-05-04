@@ -20,7 +20,7 @@ namespace Core.Fsm
         public virtual void OnEnter()
         {
             if (!String.IsNullOrEmpty(animBoolName))
-                owner.Anim.SetBool(animBoolName, true);
+                owner.ani.SetBool(animBoolName, true);
         }
         
         public virtual void OnUpdate() { }
@@ -28,7 +28,7 @@ namespace Core.Fsm
         public virtual void OnExit()
         {
             if (!String.IsNullOrEmpty(animBoolName))
-                owner.Anim.SetBool(animBoolName, false);
+                owner.ani.SetBool(animBoolName, false);
         }
     }
 }

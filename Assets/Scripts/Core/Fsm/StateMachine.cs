@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 namespace Core.Fsm
 {
@@ -50,6 +51,8 @@ namespace Core.Fsm
                 return;
             }
             CurrentState.OnExit();
+            // 状态间切换先等待一帧，防止一帧内切换多个状态
+            // await UniTask.Yield();
             TStateKey prevKey = CurrentKey;
             CurrentKey = key;
             CurrentState = _states[CurrentKey];

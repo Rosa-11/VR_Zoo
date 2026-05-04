@@ -1,4 +1,4 @@
-using Core.Evnet;
+using Core.Event;
 using Core.Pool;
 using Core.Pool.PoolObjects;
 using DG.Tweening;

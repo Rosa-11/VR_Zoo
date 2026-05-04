@@ -45,21 +45,21 @@ namespace Slingshot
         {
             foreach (DodoBird bird in otherBirds)
             {
-                bird.Anim.SetBool("Jump", true);
+                bird.ani.SetBool("Jump", true);
             }
-            chief.Anim.SetBool("Idle", false);
+            chief.ani.SetBool("Idle", false);
         }
 
         public void ChiefShock()
         {
-            chief.Anim.SetTrigger("Shock");
+            chief.ani.SetTrigger("Shock");
             chief.PlayParticle(DodoBirdParticleType.Shock);
         }
 
         public void ChiefMoveToPlayer()
         {
             // 让酋长去找玩家
-            chief.Anim.SetBool("Move", true);
+            chief.ani.SetBool("Move", true);
             chief.NavAgent.enabled = true;
             chief.NavAgent.SetDestination(moveToPlayer.position);
         }
@@ -67,8 +67,8 @@ namespace Slingshot
         public async void ChiefSayAndPoint()
         {
             // 酋长一边说话，一边指指点点
-            chief.Anim.SetBool("Move", false);
-            chief.Anim.SetBool("Say", true);
+            chief.ani.SetBool("Move", false);
+            chief.ani.SetBool("Say", true);
             chief.NavAgent.ResetPath();
             chiefSayGo.SetActive(true);
             // _director.Pause();
@@ -86,13 +86,13 @@ namespace Slingshot
             facing.enabled = false;
             for (int i = 0; i < slots.Length; i++)
             {
-                otherBirds[i].Anim.SetBool("Jump", false);
-                otherBirds[i].Anim.SetBool("Move", true);
+                otherBirds[i].ani.SetBool("Jump", false);
+                otherBirds[i].ani.SetBool("Move", true);
                 otherBirds[i].NavAgent.enabled = true;
                 otherBirds[i].NavAgent.SetDestination(slots[i].position);
             }
-            chief.Anim.SetBool("Say", false);
-            chief.Anim.SetBool("Move", true);
+            chief.ani.SetBool("Say", false);
+            chief.ani.SetBool("Move", true);
             chief.NavAgent.SetDestination(chiefTransform.position);
             
             // Debug.Log("Begin");
@@ -101,7 +101,7 @@ namespace Slingshot
             
             foreach(var bird in otherBirds)
             {
-                bird.Anim.SetBool("Move", false);
+                bird.ani.SetBool("Move", false);
                 bird.gameObject.SetActive(false);
             }
             chief.gameObject.SetActive(false);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Core.Event;
-using Core.Evnet;
 
 namespace Manager
 {

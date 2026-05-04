@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Core.Evnet
+namespace Core.Event
 {
     public class EventParameter<T1> : IEventParameter
     {

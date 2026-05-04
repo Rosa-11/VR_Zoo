@@ -29,7 +29,7 @@ namespace Entity.DodoBird
  
         public Rigidbody         Rb          { get; private set; }
         public NavMeshAgent      NavAgent    { get; private set; }
-        public Animator          Anim        { get; private set; }
+        public Animator          ani        { get; private set; }
         public XRGrabInteractable GrabInteractable { get; private set; }
         public Collider         Collider     { get; private set; }
         public AudioSource       AS          { get; private set; }
@@ -122,7 +122,7 @@ namespace Entity.DodoBird
         {
             Rb               = GetComponent<Rigidbody>();
             NavAgent         = GetComponent<NavMeshAgent>();
-            Anim             = GetComponent<Animator>();
+            ani             = GetComponent<Animator>();
             GrabInteractable = GetComponent<XRGrabInteractable>();
             Collider         = GetComponent<Collider>();
             AS               = GetComponent<AudioSource>();

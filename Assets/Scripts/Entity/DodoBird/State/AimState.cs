@@ -1,4 +1,4 @@
-using Core.Evnet;
+using Core.Event;
 using Core.Fsm;
 using Manager;
 
