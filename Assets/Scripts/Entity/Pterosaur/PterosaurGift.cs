@@ -1,18 +1,19 @@
 using Core.Event;
 using Core.Pool;
+using Core.Utils;
+using Cysharp.Threading.Tasks;
 using Manager;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Entity.Pterosaur
 {
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(XRSimpleInteractable))]
-    public class PterosaurGift : PoolableObject
+    public class PterosaurGift : PoolableObject, IRigidbodyRelayReceiver
     {
         #region SerializedFieldVariables
 
         [Header("Ground Gift")]
+        [SerializeField] private GameObject groundMark;
         [SerializeField] private float groundBounceForce = 2.5f;
         [SerializeField] private float groundDrag = 0.8f;
         [SerializeField] private bool onlyDirectInteract = true;
@@ -21,6 +22,7 @@ namespace Entity.Pterosaur
 
         #region Properties
 
+        private RigidbodyRelay _bodyRelay;
         private XRSimpleInteractable _it;
         private Rigidbody _rb;
         private PterosaurGiftType _type;
@@ -33,6 +35,7 @@ namespace Entity.Pterosaur
         private bool _caught;
         private bool _missed;
         private bool _hasBecomeGroundGift;
+        private LayerMask _layerMask;
 
         #endregion
 
@@ -40,14 +43,24 @@ namespace Entity.Pterosaur
 
         private void Awake()
         {
-            _it = GetComponent<XRSimpleInteractable>();
-            _rb = GetComponent<Rigidbody>();
+            _bodyRelay = GetComponentInChildren<RigidbodyRelay>();
+            _bodyRelay.Init(this);
+            _rb = GetComponentInChildren<Rigidbody>();
+            _it = GetComponentInChildren<XRSimpleInteractable>();
             _it.firstHoverEntered.AddListener(OnFirstHoverEntered);
+            _layerMask = LayerMask.GetMask("Land");
         }
 
         private void OnDestroy()
         {
             _it.firstHoverEntered.RemoveListener(OnFirstHoverEntered);
+        }
+
+        public override void OnSpawnFromPool()
+        {
+            base.OnSpawnFromPool();
+            _bodyRelay.transform.localPosition = Vector3.zero;
+            _bodyRelay.transform.localRotation = Quaternion.identity;
         }
 
         #endregion
@@ -69,6 +82,19 @@ namespace Entity.Pterosaur
             _rb.velocity = initVelocity;
             
             ApplyVisualByType(_type);
+            
+            Vector3 origin = transform.position + Vector3.down * 2f;
+
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 50f, _layerMask))
+            {
+                groundMark.transform.position = hit.point + hit.normal * 0.02f;
+                groundMark.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                groundMark.SetActive(true);
+            }
+            else
+            {
+                groundMark.SetActive(false);
+            }
         }
 
         #endregion
@@ -90,9 +116,10 @@ namespace Entity.Pterosaur
             _it.enabled = false;
             GameManager.Event.Broadcast("Gift.Caught", new EventParameter<PterosaurGiftType>(_type));
             PoolManager.I.Return(this);
+            groundMark.SetActive(false);
         }
 
-        private void OnCollisionEnter(Collision collision)
+        public void OnRelayCollisionEnter(Collision collision)
         {
             if (!_initialized || _caught || _missed)
                 return;
@@ -104,6 +131,7 @@ namespace Entity.Pterosaur
             _it.enabled = false;
             GameManager.Event.Broadcast("Gift.Missed", new EventParameter<PterosaurGiftType>(_type));
             BecomeGroundGift();
+            groundMark.SetActive(false);
         }
 
         #endregion
@@ -149,5 +177,33 @@ namespace Entity.Pterosaur
                     break;
             }
         }
+
+        public void OnRelayCollisionExit(Collision collision)
+        {
+        }
+
+        public void OnRelayTriggerEnter(Collider other)
+        {
+        }
+
+        public void OnRelayTriggerExit(Collider other)
+        {
+        }
+        
+#if UNITY_EDITOR
+        void OnDrawGizmosSelected()
+        {
+            Vector3 origin = transform.position + Vector3.down * 2f;
+            Vector3 rayEnd = origin + Vector3.down * 50f;
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(origin, rayEnd);
+
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 50f, _layerMask))
+            {
+                Gizmos.DrawSphere(hit.point, 0.15f);
+            }
+        }
+#endif
+        
     }
 }
