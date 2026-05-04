@@ -26,6 +26,26 @@
 
 进入 `LanTest.unity` 的 Play Mode 后，小游戏会自动开始生成占位果实。
 
+## 测试资源
+
+FruitSlash 当前测试资源位于：
+
+- `Assets/Prefabs/FruitSlash/Test/FruitSlash_TestFruit.prefab`
+- `Assets/Prefabs/FruitSlash/Test/FruitSlash_TestHalf.prefab`
+- `Assets/Prefabs/SO/PoolConfigData/FruitSlash/FruitSlash_TestFruitPool.asset`
+- `Assets/Prefabs/SO/PoolConfigData/FruitSlash/FruitSlash_TestHalfPool.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_FlameEggConfig.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_GoldenFanConfig.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_ConeFruitConfig.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_RareConfig.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_FastConfig.asset`
+- `Assets/Prefabs/SO/FruitSlash/FruitConfig/FruitSlash_Test_RainbowBunchConfig.asset`
+
+测试 Pool key：
+
+- `FruitSlash.PlaceholderFruit`
+- `FruitSlash.PlaceholderHalf`
+
 ## 主要脚本
 
 ### `FruitSlashDirector`
@@ -46,8 +66,8 @@
 - `StopGame()`
 - `SpawnNextWave()`
 - `ForceSpawnRainbowBunch()`
-- `NotifyFruitCut(...)`
-- `NotifyFruitMissed(...)`
+
+果实斩切和落地失误不由果实直接调用 Director，而是通过内部事件进入 Director。
 
 ### `FruitSlashBlade`
 
@@ -74,7 +94,7 @@
 - 七彩巨大果串需要累计 3 次切中后才完成。
 - 完整落地或低于 `failSafeY` 时通知失误。
 
-当前没有接对象池，果实和半果使用 `Instantiate` / `Destroy`，方便第一版测试。
+当前已接入项目 `PoolManager`。占位果实和占位半果通过 `LanTest.unity` 中 `Controller/PoolConfigBinder.poolConfigs` 的独立 `PoolConfigSO` 注册，不使用 `PoolConfigGroupSO`。
 
 ### `FruitSlashScoreController`
 
@@ -90,10 +110,11 @@
 
 - `FruitSlashFruitType`：果实类型。
 - `FruitSlashStageType`：阶段类型。
-- `FruitSlashFruitConfigSO`：可选的果实配置资源。
+- `FruitSlashFruitConfigSO`：果实类型配置资源，用于把果实类型映射到池 key、半果池 key、基础分、颜色、音效/VFX key 和飞行时间范围。
 - `FruitSlashEvents`：预留事件名常量。
 
-如果不配置 `FruitSlashFruitConfigSO`，`FruitSlashDirector` 会用 Unity 基础 3D Object 运行时生成占位果实。
+如果不配置 `FruitSlashFruitConfigSO`，`FruitSlashDirector` 会使用默认 key `FruitSlash.PlaceholderFruit` 从对象池获取测试果实。
+`LanTest.unity` 当前已在 `FruitSlashDirector.fruitConfigs` 中配置 6 个测试 FruitConfig，覆盖 `FlameEgg`、`GoldenFan`、`ConeFruit`、`Rare`、`Fast`、`RainbowBunch`。
 
 ## 事件
 
@@ -104,6 +125,11 @@
 - `"FruitSlash.FruitCut"`
 - `"FruitSlash.ComboChanged"`
 - `"FruitSlash.Completed"`
+
+模块内部事件：
+
+- `"FruitSlash.Internal.FruitCut"`：`FruitSlashFruit` 广播，`FruitSlashDirector` 独占监听并结算。
+- `"FruitSlash.Internal.FruitMissed"`：`FruitSlashFruit` 广播，`FruitSlashDirector` 独占监听并统计失误。
 
 注意：当前项目的 `EventManager` 对同一个事件名只保留一个注册监听器，后注册会覆盖先注册。后续如果多个系统都要监听同一个 FruitSlash 事件，需要先改造事件系统为多播，或由一个中转组件统一分发。
 
@@ -154,21 +180,22 @@
 
 - `fruitType`
 - `baseScore`
-- `fruitPrefab`
-- `halfFruitPrefab`
-- `juiceVfxPrefab`
-- `sparkVfxPrefab`
+- `fruitPoolKey`
+- `halfFruitPoolKey`
+- `juiceVfxPoolKey`
+- `sparkVfxPoolKey`
 - `cutAudio`
 - `placeholderColor`
 - `flightTimeRange`
 
-正式果实预制体根节点需要有：
+正式果实池对应的预制体根节点需要有：
 
 - `FruitSlashFruit`
 - `Rigidbody`
 - `Collider`
+- `PoolableObject`，或由 `FruitSlashFruit` 继承提供
 
-如果没有这些组件，运行时会自动补 `Rigidbody`、`Collider` 和 `FruitSlashFruit`，但正式资源建议手动配置，便于检查碰撞范围和表现。
+正式半果/VFX 池对应的预制体建议挂 `FruitSlashPooledObject`，用于回池时重置 Rigidbody 和粒子状态。延迟回池直接使用项目已有 `PoolManager.I.Return(obj, delay)`，不要重复实现新的延迟回池逻辑。
 
 ## 注意事项
 
@@ -179,14 +206,17 @@
 - 光刃本身不需要 Collider，当前使用上一帧到当前帧的 capsule 查询。
 - 光刃和拖影会在运行时创建兜底材质，避免 TrailRenderer 未分配材质时显示紫色。
 - `FruitSlashBlade.fruitMask` 默认是 `~0`，会查询所有 Layer；后续正式化时建议建立专用 Fruit layer 降低误判和查询成本。
-- 当前半果和占位果实使用 `Destroy` 清理，不适合大量长期运行；后续应接入 `PoolManager`。
+- 当前占位果实和占位半果已使用 `PoolManager`，默认 key 为 `FruitSlash.PlaceholderFruit` 和 `FruitSlash.PlaceholderHalf`。
+- 正式果实、正式半果和 VFX 如果使用自定义 key，需要先通过 `PoolConfigSO` 注册对象池。
+- `LanTest.unity` 中 FruitSlash 测试池走 `PoolConfigBinder.poolConfigs` 直接列表，不使用 `PoolConfigGroupSO`。
 - `FruitSlashScoreController` 当前使用 `TextMeshPro` 世界空间文本，未做复杂动画和 Billboard，正式 UI 需要补充朝向玩家和动效。
 - `LanTest.unity` 中已有一个与本模块无关的 `Prefab Indexer` 缺失脚本问题，当前不处理。
 
 ## 后续开发建议
 
-- 接入对象池：
-  - 果实、半果、果汁 VFX、火花 VFX、飘分 UI 都改为 `PoolManager.I.Get/Return`。
+- 完善对象池配置：
+  - 将正式果实、半果、果汁 VFX、火花 VFX、飘分 UI 加入独立 `PoolConfigSO`。
+  - 保持延迟回池使用 `PoolManager.I.Return(obj, delay)` 或 `PoolableObject.ReturnToPoolDelayed(delay)`。
 - 完善正式资源：
   - 替换基础 3D Object 占位果实。
   - 为每种果实制作完整体、半果、断面材质、粒子和音效。

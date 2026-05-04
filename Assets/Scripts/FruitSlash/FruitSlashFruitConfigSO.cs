@@ -11,22 +11,19 @@ namespace FruitSlash
         [Header("基础信息")]
         public FruitSlashFruitType fruitType = FruitSlashFruitType.FlameEgg;
         [Min(0)] public int baseScore = 15;
-        public bool canSpawnAsRandomNormal = true;
 
-        [Header("预制体")]
-        public GameObject fruitPrefab;
-        public GameObject halfFruitPrefab;
+        [Header("对象池 Key")]
+        public string fruitPoolKey;
+        public string halfFruitPoolKey;
+        public string juiceVfxPoolKey;
+        public string sparkVfxPoolKey;
 
         [Header("反馈")]
-        public GameObject juiceVfxPrefab;
-        public GameObject sparkVfxPrefab;
         public AudioClip cutAudio;
         public Color placeholderColor = new Color(1f, 0.35f, 0.05f);
 
         [Header("飞行参数")]
         public Vector2 flightTimeRange = new Vector2(1.8f, 2.4f);
-        public Vector2 extraArcHeightRange = new Vector2(0f, 0.4f);
-        [Range(0f, 1f)] public float fastChance = 0.08f;
 
         /// <summary>
         /// 按果实类型给出默认分值，未配置 ScriptableObject 时使用。

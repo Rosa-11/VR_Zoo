@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Core.Event;
+using Core.Pool;
 using Manager;
 using UnityEngine;
 
@@ -20,7 +21,8 @@ namespace FruitSlash
 
         [Header("果实配置")]
         [SerializeField] private List<FruitSlashFruitConfigSO> fruitConfigs = new();
-        [SerializeField] private LayerMask fruitLayerMask = ~0;
+        [SerializeField] private string placeholderFruitPoolKey = "FruitSlash.PlaceholderFruit";
+        [SerializeField] private string placeholderHalfPoolKey = "FruitSlash.PlaceholderHalf";
 
         [Header("节奏")]
         [SerializeField] private bool autoStart;
@@ -43,10 +45,6 @@ namespace FruitSlash
         [SerializeField] private int emptyWavesToSlowDown = 2;
         [SerializeField] private int successCutsToRecover = 3;
 
-        [Header("占位果实")]
-        [SerializeField] private float placeholderFruitScale = 0.32f;
-        [SerializeField] private Material placeholderMaterial;
-
         [Header("调试")]
         [SerializeField] private bool debugLog;
 
@@ -54,6 +52,7 @@ namespace FruitSlash
         public int CutFruitCount { get; private set; }
         public bool IsRunning { get; private set; }
 
+        private readonly Dictionary<FruitSlashFruitType, FruitSlashFruitConfigSO> _fruitConfigMap = new();
         private readonly List<FruitSlashFruit> _activeFruits = new();
         private readonly Queue<float> _recentMissTimes = new();
         private Coroutine _spawnRoutine;
@@ -71,31 +70,38 @@ namespace FruitSlash
         {
             if (scoreController == null)
                 scoreController = GetComponentInChildren<FruitSlashScoreController>();
+            BuildFruitConfigMap();
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            BuildFruitConfigMap();
+        }
+#endif
+
+        private void OnEnable()
+        {
+            GameManager.Event.Register(
+                FruitSlashEvents.InternalFruitCut,
+                new Event<FruitSlashFruit, FruitSlashBlade, int>(OnFruitCut)
+            );
+            GameManager.Event.Register(
+                FruitSlashEvents.InternalFruitMissed,
+                new Event<FruitSlashFruit>(OnFruitMissed)
+            );
+        }
+
+        private void OnDisable()
+        {
+            GameManager.Event.Unregister(FruitSlashEvents.InternalFruitCut);
+            GameManager.Event.Unregister(FruitSlashEvents.InternalFruitMissed);
         }
 
         private void Start()
         {
             if (autoStart)
                 StartGame();
-        }
-
-        /// <summary>
-        /// 用于 LanTest 自举脚本配置运行时引用。
-        /// </summary>
-        public void ConfigureLanTest(
-            FruitSlashScoreController score,
-            IList<FruitSlashBlade> bladeList,
-            Transform spawn,
-            Transform target,
-            Animator animator = null)
-        {
-            scoreController = score;
-            blades.Clear();
-            if (bladeList != null)
-                blades.AddRange(bladeList);
-            spawnPoint = spawn;
-            targetCenter = target;
-            longNeckAnimator = animator;
         }
 
         /// <summary>
@@ -168,13 +174,13 @@ namespace FruitSlash
             _rainbowSpawned = true;
             if (debugLog)
                 Debug.Log("[FruitSlashDirector] Spawn rainbow bunch");
-            SpawnFruit(FruitSlashFruitType.RainbowBunch, true, false, true, true);
+            SpawnFruit(FruitSlashFruitType.RainbowBunch, false, true);
         }
 
         /// <summary>
         /// 果实切中回调。
         /// </summary>
-        public void NotifyFruitCut(FruitSlashFruit fruit, FruitSlashBlade blade, int sameSwingCutCount)
+        private void OnFruitCut(FruitSlashFruit fruit, FruitSlashBlade blade, int sameSwingCutCount)
         {
             if (fruit == null || _completed)
                 return;
@@ -201,6 +207,7 @@ namespace FruitSlash
             CutFruitCount += 1;
             if (scoreController != null)
                 scoreController.AddFruitScore(fruit, sameSwingCutCount);
+            GameManager.Event.Broadcast(FruitSlashEvents.FruitCut, new EventParameter<FruitSlashFruit>(fruit));
             if (debugLog)
                 Debug.Log($"[FruitSlashDirector] Fruit cut: type={fruit.FruitType}, count={CutFruitCount}, sameSwing={sameSwingCutCount}, stage={CurrentStage}");
 
@@ -230,7 +237,7 @@ namespace FruitSlash
         /// <summary>
         /// 果实完整落地回调。
         /// </summary>
-        public void NotifyFruitMissed(FruitSlashFruit fruit)
+        private void OnFruitMissed(FruitSlashFruit fruit)
         {
             if (fruit != null)
                 _activeFruits.Remove(fruit);
@@ -291,112 +298,52 @@ namespace FruitSlash
 
             for (int i = 0; i < fruitCount; i++)
             {
-                bool useRare = _pendingRareFruit;
-                if (useRare)
-                    _pendingRareFruit = false;
-
-                FruitSlashFruitType type = PickFruitType(CurrentStage, useRare);
-                bool fast = !useRare && CurrentStage == FruitSlashStageType.Stable && Random.value < 0.12f;
-                SpawnFruit(type, useRare, fast, false, slowWave);
+                FruitSlashFruitType type = PickWaveFruitType(CurrentStage);
+                bool fastTrajectory = type == FruitSlashFruitType.Fast;
+                SpawnFruit(type, fastTrajectory, slowWave);
             }
 
             if (longNeckAnimator != null)
                 longNeckAnimator.SetTrigger("Throw");
         }
 
-        private void SpawnFruit(FruitSlashFruitType type, bool rare, bool fast, bool rainbow, bool slowWave)
+        private void SpawnFruit(FruitSlashFruitType type, bool fastTrajectory, bool slowWave)
         {
-            FruitSlashFruitConfigSO config = FindConfig(type);
-            GameObject fruitObject = CreateFruitObject(config, type, rare, fast, rainbow);
+            FruitSlashFruitConfigSO config = GetConfig(type);
             Vector3 start = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.forward * 2f + Vector3.up * 1.4f;
             Vector3 target = GetTargetPosition(slowWave);
-            float flightTime = GetFlightTime(CurrentStage, slowWave, fast, config);
+            float flightTime = GetFlightTime(CurrentStage, slowWave, fastTrajectory, config);
             Vector3 velocity = CalculateBallisticVelocity(start, target, flightTime);
 
-            fruitObject.transform.position = start;
-            FruitSlashFruit fruit = fruitObject.GetComponent<FruitSlashFruit>();
-            fruit.Initialize(this, config, rare ? FruitSlashFruitType.Rare : type, rare, fast, rainbow, velocity);
+            FruitSlashFruit fruit = GetFruitFromPool(config, start);
+            if (fruit == null)
+                return;
+
+            fruit.Initialize(
+                config,
+                type,
+                type == FruitSlashFruitType.Rare,
+                type == FruitSlashFruitType.Fast,
+                type == FruitSlashFruitType.RainbowBunch,
+                velocity,
+                placeholderHalfPoolKey
+            );
             _activeFruits.Add(fruit);
         }
 
-        private GameObject CreateFruitObject(FruitSlashFruitConfigSO config, FruitSlashFruitType type, bool rare, bool fast, bool rainbow)
+        private FruitSlashFruit GetFruitFromPool(FruitSlashFruitConfigSO config, Vector3 position)
         {
-            GameObject fruitObject = null;
-            if (config != null && config.fruitPrefab != null)
-                fruitObject = Instantiate(config.fruitPrefab);
+            string poolKey = config != null && !string.IsNullOrEmpty(config.fruitPoolKey)
+                ? config.fruitPoolKey
+                : placeholderFruitPoolKey;
 
-            if (fruitObject == null)
-                fruitObject = CreatePlaceholderFruit(type, rare, fast, rainbow);
-
-            if (fruitObject.GetComponent<Rigidbody>() == null)
-                fruitObject.AddComponent<Rigidbody>();
-
-            if (fruitObject.GetComponent<Collider>() == null)
+            if (PoolManager.I == null || !PoolManager.I.HasPool(poolKey))
             {
-                SphereCollider sphere = fruitObject.AddComponent<SphereCollider>();
-                sphere.radius = rainbow ? 0.55f : 0.28f;
+                Debug.LogError($"[FruitSlashDirector] Fruit pool '{poolKey}' is not registered.");
+                return null;
             }
 
-            FruitSlashFruit fruit = fruitObject.GetComponent<FruitSlashFruit>();
-            if (fruit == null)
-                fruit = fruitObject.AddComponent<FruitSlashFruit>();
-
-            return fruitObject;
-        }
-
-        private GameObject CreatePlaceholderFruit(FruitSlashFruitType type, bool rare, bool fast, bool rainbow)
-        {
-            GameObject root = new GameObject("FruitSlash_" + type);
-            root.transform.localScale = Vector3.one * (rainbow ? placeholderFruitScale * 1.8f : placeholderFruitScale);
-
-            Color color = rare ? FruitSlashFruitConfigSO.GetDefaultColor(FruitSlashFruitType.Rare) : FruitSlashFruitConfigSO.GetDefaultColor(type);
-            if (fast)
-                color = FruitSlashFruitConfigSO.GetDefaultColor(FruitSlashFruitType.Fast);
-
-            if (rainbow)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    GameObject bead = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    bead.name = "RainbowBead_" + i;
-                    bead.transform.SetParent(root.transform, false);
-                    bead.transform.localPosition = new Vector3((i - 2) * 0.45f, Mathf.Sin(i) * 0.12f, 0f);
-                    bead.transform.localScale = Vector3.one * 0.75f;
-                    ApplyColor(bead, Color.HSVToRGB(i / 5f, 0.8f, 1f));
-                    Destroy(bead.GetComponent<Collider>());
-                }
-            }
-            else
-            {
-                GameObject body = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                body.name = "Body";
-                body.transform.SetParent(root.transform, false);
-                body.transform.localPosition = Vector3.zero;
-                body.transform.localScale = new Vector3(1f, 1.15f, 1f);
-                ApplyColor(body, color);
-                Destroy(body.GetComponent<Collider>());
-
-                GameObject cap = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                cap.name = "Cap";
-                cap.transform.SetParent(root.transform, false);
-                cap.transform.localPosition = new Vector3(0.12f, 0.45f, 0f);
-                cap.transform.localScale = new Vector3(0.55f, 0.35f, 0.55f);
-                ApplyColor(cap, Color.Lerp(color, Color.white, 0.25f));
-                Destroy(cap.GetComponent<Collider>());
-            }
-
-            return root;
-        }
-
-        private void ApplyColor(GameObject target, Color color)
-        {
-            Renderer targetRenderer = target.GetComponent<Renderer>();
-            if (targetRenderer == null)
-                return;
-
-            if (placeholderMaterial != null)
-                targetRenderer.material = placeholderMaterial;
-            targetRenderer.material.color = color;
+            return PoolManager.I.Get<FruitSlashFruit>(poolKey, position, Quaternion.identity);
         }
 
         private Vector3 GetTargetPosition(bool slowWave)
@@ -419,13 +366,19 @@ namespace FruitSlash
             return (target - start - 0.5f * gravity * flightTime * flightTime) / flightTime;
         }
 
-        private FruitSlashFruitType PickFruitType(FruitSlashStageType stage, bool rare)
+        private FruitSlashFruitType PickWaveFruitType(FruitSlashStageType stage)
         {
-            if (rare)
+            if (_pendingRareFruit)
+            {
+                _pendingRareFruit = false;
                 return FruitSlashFruitType.Rare;
+            }
 
             if (stage == FruitSlashStageType.Tutorial)
                 return FruitSlashFruitType.FlameEgg;
+
+            if (stage == FruitSlashStageType.Stable && Random.value < 0.12f)
+                return FruitSlashFruitType.Fast;
 
             int index = Random.Range(0, 3);
             switch (index)
@@ -514,16 +467,33 @@ namespace FruitSlash
             }
         }
 
-        private FruitSlashFruitConfigSO FindConfig(FruitSlashFruitType type)
+        private void BuildFruitConfigMap()
         {
+            _fruitConfigMap.Clear();
             for (int i = 0; i < fruitConfigs.Count; i++)
             {
                 FruitSlashFruitConfigSO config = fruitConfigs[i];
-                if (config != null && config.fruitType == type)
-                    return config;
-            }
+                if (config == null)
+                    continue;
 
-            return null;
+                if (_fruitConfigMap.ContainsKey(config.fruitType))
+                {
+                    Debug.LogWarning($"[FruitSlashDirector] Duplicate FruitConfig for {config.fruitType}; later entry is ignored.");
+                    continue;
+                }
+
+                _fruitConfigMap.Add(config.fruitType, config);
+            }
+        }
+
+        private FruitSlashFruitConfigSO GetConfig(FruitSlashFruitType type)
+        {
+            if (_fruitConfigMap.Count != fruitConfigs.Count)
+                BuildFruitConfigMap();
+
+            return _fruitConfigMap.TryGetValue(type, out FruitSlashFruitConfigSO config)
+                ? config
+                : null;
         }
 
         private void UpdateStage()

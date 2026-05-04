@@ -2176,12 +2176,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1100006275}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f88e332dfdbb4879a91f4c6121832d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: e97ebf7e9490090458d40c62be5daab8, type: 2}
+  group: {fileID: 0}
+  poolConfigs:
+  - {fileID: 11400000, guid: 112ddac9d292852408433afa6ebb0f41, type: 2}
+  - {fileID: 11400000, guid: 26392c69674a43349b13b93a73378720, type: 2}
 --- !u!114 &1100006277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3942,12 +3945,17 @@ MonoBehaviour:
   spawnPoint: {fileID: 1847164571}
   targetCenter: {fileID: 113343595}
   longNeckAnimator: {fileID: 0}
-  fruitConfigs: []
-  fruitLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
+  fruitConfigs:
+  - {fileID: 11400000, guid: 4ad35b718239d814e85274b23afbebb0, type: 2}
+  - {fileID: 11400000, guid: fcee337b0b4dbfc4dbfdff09df0a9020, type: 2}
+  - {fileID: 11400000, guid: 71debeb96acb1f04db91bf6960d9c941, type: 2}
+  - {fileID: 11400000, guid: 0d39a1334092cbd47956d6665b9360d4, type: 2}
+  - {fileID: 11400000, guid: d5b3d6160a3f6974cb0c867a3d113c6e, type: 2}
+  - {fileID: 11400000, guid: 3db7d3eba175f94479c7bfb84daca6e7, type: 2}
+  placeholderFruitPoolKey: FruitSlash.PlaceholderFruit
+  placeholderHalfPoolKey: FruitSlash.PlaceholderHalf
   autoStart: 1
-  flightTimeMultiplier: 1.35
+  flightTimeMultiplier: 0.3
   tutorialEndCutCount: 5
   advancedEndCutCount: 18
   rainbowTriggerCutCount: 30
@@ -3960,8 +3968,6 @@ MonoBehaviour:
   missesToSlowDown: 3
   emptyWavesToSlowDown: 2
   successCutsToRecover: 3
-  placeholderFruitScale: 0.32
-  placeholderMaterial: {fileID: 0}
   debugLog: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

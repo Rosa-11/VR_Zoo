@@ -1,4 +1,5 @@
 using Core.Event;
+using Core.Pool;
 using Manager;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace FruitSlash
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
-    public class FruitSlashFruit : MonoBehaviour
+    public class FruitSlashFruit : PoolableObject
     {
         [Header("默认配置")]
         [SerializeField] private FruitSlashFruitType fruitType = FruitSlashFruitType.FlameEgg;
@@ -23,9 +24,9 @@ namespace FruitSlash
         [SerializeField] private int rainbowReward = 150;
 
         [Header("反馈")]
-        [SerializeField] private GameObject halfFruitPrefab;
-        [SerializeField] private GameObject juiceVfxPrefab;
-        [SerializeField] private GameObject sparkVfxPrefab;
+        [SerializeField] private string halfFruitPoolKey;
+        [SerializeField] private string juiceVfxPoolKey;
+        [SerializeField] private string sparkVfxPoolKey;
         [SerializeField] private AudioClip cutAudio;
         [SerializeField] private float halfImpulse = 1.8f;
         [SerializeField] private float halfLifeTime = 3f;
@@ -42,7 +43,6 @@ namespace FruitSlash
         public int RainbowReward => rainbowReward;
         public bool IsFinished => _cutFinished || _missed;
 
-        private FruitSlashDirector _director;
         private Rigidbody _rb;
         private Collider _collider;
         private Renderer[] _renderers;
@@ -68,17 +68,16 @@ namespace FruitSlash
         /// 初始化运行时果实。
         /// </summary>
         public void Initialize(
-            FruitSlashDirector owner,
             FruitSlashFruitConfigSO config,
             FruitSlashFruitType type,
             bool rare,
             bool fast,
             bool rainbow,
-            Vector3 velocity)
+            Vector3 velocity,
+            string fallbackHalfPoolKey)
         {
             CacheComponents();
 
-            _director = owner;
             fruitType = type;
             isRare = rare;
             isFast = fast;
@@ -90,9 +89,9 @@ namespace FruitSlash
             if (config != null)
             {
                 baseScore = config.baseScore;
-                halfFruitPrefab = config.halfFruitPrefab;
-                juiceVfxPrefab = config.juiceVfxPrefab;
-                sparkVfxPrefab = config.sparkVfxPrefab;
+                halfFruitPoolKey = config.halfFruitPoolKey;
+                juiceVfxPoolKey = config.juiceVfxPoolKey;
+                sparkVfxPoolKey = config.sparkVfxPoolKey;
                 cutAudio = config.cutAudio;
                 _placeholderColor = config.placeholderColor;
             }
@@ -100,6 +99,10 @@ namespace FruitSlash
             {
                 baseScore = FruitSlashFruitConfigSO.GetDefaultScore(type);
                 _placeholderColor = FruitSlashFruitConfigSO.GetDefaultColor(type);
+                halfFruitPoolKey = fallbackHalfPoolKey;
+                juiceVfxPoolKey = string.Empty;
+                sparkVfxPoolKey = string.Empty;
+                cutAudio = null;
             }
 
             if (isRare)
@@ -155,10 +158,11 @@ namespace FruitSlash
             if (cutAudio != null)
                 AudioSource.PlayClipAtPoint(cutAudio, transform.position);
 
-            if (_director != null)
-                _director.NotifyFruitCut(this, blade, sameSwingCutCount);
-            GameManager.Event.Broadcast(FruitSlashEvents.FruitCut, new EventParameter<FruitSlashFruit>(this));
-            Destroy(gameObject, 0.1f);
+            GameManager.Event.Broadcast(
+                FruitSlashEvents.InternalFruitCut,
+                new EventParameter<FruitSlashFruit, FruitSlashBlade, int>(this, blade, sameSwingCutCount)
+            );
+            ReturnToPool();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -178,9 +182,8 @@ namespace FruitSlash
                 return;
 
             _missed = true;
-            if (_director != null)
-                _director.NotifyFruitMissed(this);
-            Destroy(gameObject, 0.5f);
+            GameManager.Event.Broadcast(FruitSlashEvents.InternalFruitMissed, new EventParameter<FruitSlashFruit>(this));
+            ReturnToPool();
         }
 
         private void SpawnHalves(Vector3 splitDirection)
@@ -197,22 +200,17 @@ namespace FruitSlash
 
         private GameObject CreateHalf(Vector3 position, Quaternion rotation, string suffix)
         {
-            GameObject half;
-            if (halfFruitPrefab != null)
+            GameObject half = null;
+            FruitSlashPooledObject pooledHalf = null;
+
+            if (!string.IsNullOrEmpty(halfFruitPoolKey) && PoolManager.I != null && PoolManager.I.HasPool(halfFruitPoolKey))
             {
-                half = Instantiate(halfFruitPrefab, position, rotation);
+                pooledHalf = PoolManager.I.Get<FruitSlashPooledObject>(halfFruitPoolKey, position, rotation);
+                half = pooledHalf != null ? pooledHalf.gameObject : null;
             }
-            else
-            {
-                half = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                half.name = name + "_" + suffix;
-                half.transform.position = position;
-                half.transform.rotation = rotation;
-                half.transform.localScale = transform.localScale * 0.45f;
-                Renderer halfRenderer = half.GetComponent<Renderer>();
-                if (halfRenderer != null)
-                    halfRenderer.material.color = _placeholderColor;
-            }
+
+            if (half == null)
+                return null;
 
             if (half.GetComponent<Collider>() == null)
                 half.AddComponent<SphereCollider>();
@@ -222,7 +220,12 @@ namespace FruitSlash
                 halfRb = half.AddComponent<Rigidbody>();
 
             halfRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-            Destroy(half, halfLifeTime);
+            half.transform.localScale = transform.localScale * 0.45f;
+            ApplyColorToRenderers(half, _placeholderColor);
+
+            if (pooledHalf != null)
+                PoolManager.I.Return(pooledHalf, halfLifeTime);
+
             return half;
         }
 
@@ -243,10 +246,8 @@ namespace FruitSlash
         private void SpawnHitFeedback(Vector3 segmentStart, Vector3 segmentEnd)
         {
             Quaternion rotation = Quaternion.LookRotation((segmentEnd - segmentStart).normalized, Vector3.up);
-            if (juiceVfxPrefab != null)
-                Destroy(Instantiate(juiceVfxPrefab, transform.position, rotation), 3f);
-            if (sparkVfxPrefab != null)
-                Destroy(Instantiate(sparkVfxPrefab, transform.position, rotation), 3f);
+            SpawnTimedPoolObject(juiceVfxPoolKey, transform.position, rotation, 3f);
+            SpawnTimedPoolObject(sparkVfxPoolKey, transform.position, rotation, 3f);
         }
 
         private Vector3 CalculateSplitDirection(Vector3 segmentStart, Vector3 segmentEnd)
@@ -289,6 +290,40 @@ namespace FruitSlash
                 if (fruitRenderer != null)
                     fruitRenderer.material.color = _placeholderColor;
             }
+        }
+
+        private static void ApplyColorToRenderers(GameObject target, Color color)
+        {
+            Renderer[] targetRenderers = target.GetComponentsInChildren<Renderer>(true);
+            for (int i = 0; i < targetRenderers.Length; i++)
+            {
+                if (targetRenderers[i] != null)
+                    targetRenderers[i].material.color = color;
+            }
+        }
+
+        private static void SpawnTimedPoolObject(string key, Vector3 position, Quaternion rotation, float lifetime)
+        {
+            if (string.IsNullOrEmpty(key) || PoolManager.I == null || !PoolManager.I.HasPool(key))
+                return;
+
+            PoolableObject obj = PoolManager.I.Get(key, position, rotation);
+            if (obj != null)
+                PoolManager.I.Return(obj, lifetime);
+        }
+
+        public override void OnReturnToPool()
+        {
+            if (_rb != null)
+            {
+                _rb.velocity = Vector3.zero;
+                _rb.angularVelocity = Vector3.zero;
+                _rb.isKinematic = true;
+            }
+            if (_collider != null)
+                _collider.enabled = false;
+            SetRenderersVisible(true);
+            base.OnReturnToPool();
         }
     }
 }
