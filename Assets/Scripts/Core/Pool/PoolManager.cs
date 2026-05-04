@@ -7,27 +7,6 @@ using UnityEngine.Pool;  // Unity 2021+ 官方对象池
 
 namespace Core.Pool
 {
-    #region 配置数据结构
-    [System.Serializable]
-    public class PoolConfig
-    {
-        [Tooltip("唯一标识符，对应 Get/Return 调用中的 key 参数。")]
-        public string key;
-
-        [Tooltip("要池化的预制体（须含有 PoolableObject 组件，否则运行时自动添加基类）。")]
-        public GameObject prefab;
-
-        [Tooltip("场景加载时预热的对象数量。")]
-        [Min(0)] public int initialSize = 10;
-
-        [Tooltip("启用后，当池耗尽时自动创建新实例，直至达到 maxSize。")]
-        public bool autoExpand = true;
-
-        [Tooltip("池内对象总数的上限，仅在 autoExpand 启用时生效。")]
-        [Min(1)] public int maxSize = 50;
-    }
-    #endregion
-    
     /// <summary>
     /// 通用对象池管理器。
     ///
@@ -46,28 +25,33 @@ namespace Core.Pool
     /// </summary>
     public class PoolManager : Singleton<PoolManager>
     {
-        private List<PoolConfig> poolConfigs = new();
+        private List<PoolConfigSO> poolConfigs = new();
 
         #region PrivateField
 
         // key → UnityEngine.Pool.ObjectPool（真正的池逻辑在这里）
         private readonly Dictionary<string, ObjectPool<PoolableObject>> _pools      = new();
         // key → 配置缓存（供 createFunc 闭包使用）
-        private readonly Dictionary<string, PoolConfig>                 _configs    = new();
+        private readonly Dictionary<string, PoolConfigSO>                 _configs    = new();
         // key → Hierarchy 层级容器（场景层级整洁）
         private readonly Dictionary<string, Transform>                  _containers = new();
 
         #endregion
 
-        public void SetupPool(PoolConfigDataSO data)
+        public void SetupPool(PoolConfigGroupSO group)
         {
-            // 清除旧池子
+            if (group != null)
+                SetupPool(group.poolConfigs);
+        }
+
+        public void SetupPool(List<PoolConfigSO> configs)
+        {
             foreach (var pool in _pools.Values)
                 pool.Dispose();
             _pools.Clear();
             
-            if (data != null)
-                poolConfigs = data.poolConfigs;
+            if (configs is { Count: > 0 })
+                poolConfigs = configs;
             foreach (var cfg in poolConfigs)
                 RegisterPool(cfg);
         }
@@ -78,7 +62,7 @@ namespace Core.Pool
         /// 运行时动态注册一个对象池。
         /// Inspector 中配置的池会在 Awake 时自动注册，无需手动调用。
         /// </summary>
-        public void RegisterPool(PoolConfig config)
+        public void RegisterPool(PoolConfigSO config)
         {
             if (_pools.ContainsKey(config.key))
             {
@@ -249,6 +233,10 @@ namespace Core.Pool
         /// <summary>查询指定池当前的活跃数量（调试用）。</summary>
         public int GetActiveCount(string key) =>
             _pools.TryGetValue(key, out var pool) ? pool.CountActive : 0;
+
+        /// <summary>查询指定 key 的对象池是否已注册。</summary>
+        public bool HasPool(string key) =>
+            !string.IsNullOrEmpty(key) && _pools.ContainsKey(key);
         #endregion
 
         // ─── Singleton 清理 ──────────────────────────────────────────────────

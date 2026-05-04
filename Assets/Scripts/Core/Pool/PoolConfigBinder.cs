@@ -1,15 +1,22 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core.Pool
 {
     public class PoolConfigBinder : MonoBehaviour
     {
-        [SerializeField] private PoolConfigDataSO data;
+        [Tooltip("优先使用group")]
+        [SerializeField] private PoolConfigGroupSO group;
+        [Tooltip("优先使用group")]
+        [SerializeField] private List<PoolConfigSO> poolConfigs;
 
         private void Start()
         {
-            PoolManager.I.SetupPool(data);
+            if (group != null)
+                PoolManager.I.SetupPool(group);
+            else 
+                PoolManager.I.SetupPool(poolConfigs);
         }
     }
 }
