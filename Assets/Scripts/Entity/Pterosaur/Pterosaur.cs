@@ -117,8 +117,8 @@ namespace Entity.Pterosaur
             _fsm.AddState(PterosaurStateType.Idle, new IdleState(this, _fsm, "Idle"));
             _fsm.AddState(PterosaurStateType.Move, new MoveState(this, _fsm, "Move"));
             _fsm.AddState(PterosaurStateType.Throw, new ThrowState(this, _fsm, "Throw"));
-            _fsm.OnStateChanged += (from, to) =>
-                Debug.Log($"[Pterosaur:{name}] {from} → {to}");
+            // _fsm.OnStateChanged += (from, to) =>
+            //     Debug.Log($"[Pterosaur:{name}] {from} → {to}");
         }
 
         private void RegisterXR()
